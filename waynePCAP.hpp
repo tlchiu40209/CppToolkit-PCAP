@@ -11,6 +11,14 @@
 #include <string>
 
 namespace wayne {
+	namespace PCAP {
+
+	}
+
+
+
+
+
 
 struct PCAPHeaderBlock{
 private:
@@ -23,6 +31,14 @@ private:
 	std::map<std::string, std::string> options; // @suppress("Invalid template argument")
 
 public:
+	/* Accessible Predefined Value */
+	char* OPTION_OPT_COMMENT = 0100;
+	char* OPTION_SHB_HARDWARE = 0200;
+	char* OPTION_SHB_OS = 0300;
+	char* OPTION_SHB_USERAPPL = 0400;
+	char* OPTION_OPT_ENDOFOPT = 0000;
+	/* ref https://wiki.wireshark.org/Development/PcapNg */
+
 	/* Constructor */
 	PCAPHeaderBlock();
 	virtual ~PCAPHeaderBlock();
@@ -36,9 +52,11 @@ public:
 	int getMajorVersion();
 	int getMinorVersion();
 	char* getSectionLength(); /*Should not be changeable*/
-	std::map<std::string> getAllOptions();
+
+	std::map<std::string> getAllOptions(); // @suppress("Invalid template argument")
 	std::string* getAllOptions();
 	char** getAllOptions();
+
 
 	bool setByteOrder(char* newByteOrder);
 	bool setMajorVersion(int newMajorVersion);
