@@ -9,23 +9,29 @@
 #define LIB_WAYNEPCAP_HPP_
 #include <map>
 #include <string>
+#include <cstring>
+#include <vector>
 
-namespace wayne {
-    namespace PCAP
-    {
+namespace wayne
+{
+	namespace PCAP
+	{
+		class PCAPNG
+		{
+			public:
+				PCAPNG();
+				PCAPNG(const PCAPNG &other);
+				PCAPNG(PCAPNG &&other);
+				virtual ~PCAPNG();
+				PCAPNG& operator=(const PCAPNG &other);
+				PCAPNG& operator=(PCAPNG &other);
+				PCAPNG& operator==(const PCAPNG &other);
+				PCAPNG& operator==(PCAPNG &other);
+			private:
 
-        class PCAPNG
-        {
-            PCAPNG();
-            virtual ~PCAPNG();
-            PCAPNG(PCAPNG &&other);
-            PCAPNG& operator=(const PCAPNG &other);
-            PCAPNG& operator=(PCAPNG &other);
-            PCAPNG& operator==(const PCAPNG &other);
-            PCAPNG& operator==(PCAPNG &other);
-        };
+		};
 
-    }
+	}
 } /* namespace wayne */
 
 #endif /* LIB_WAYNEPCAP_HPP_ */
