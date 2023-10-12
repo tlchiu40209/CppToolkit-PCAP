@@ -10,7 +10,8 @@
 namespace wayne {
 	namespace PCAP {
 
-		sectionHeaderBlock::sectionHeaderBlock() {
+		sectionHeaderBlock::sectionHeaderBlock()
+				{
 			//block();
 			this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
 			std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
@@ -56,15 +57,78 @@ namespace wayne {
 
 		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder, size_t initMajorVersion, size_t initMinorVersion)
 		{
-			//Here
+			switch (initByteOrder)
+			{
+			case endianTypes::BIG:
+				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
+				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
+				break;
+			case endianTypes::SMALL:
+				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
+				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+				break;
+			}
+
+			if (initMajorVersion >= 65535)
+			{
+				this->majorVersion = new char[]{"\xFF\xFF"};
+			}
+			else
+			{
+				this->minorVersion = new char[std::strlen((char*)&initMajorVersion)];
+				std::strncpy(this->minorVersion, (char*)&initMajorVersion, std::strlen((char*)&initMajorVersion));
+			}
+
+			if (initMinorVersion >= 65535)
+			{
+				this->minorVersion = new char[]{"\xFF\xFF"};
+			}
+			else
+			{
+				this->minorVersion = new char[std::strlen((char*)&initMinorVersion)];
+				std::strncpy(this->minorVersion, (char*)&initMinorVersion, std::strlen((char*)&initMinorVersion));
+			}
+
+			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(const char* initByteOrderExact, const char* initMajorVersionExact, const char* initMinorVersionExact)
 		{
-			//Here
+			if (std::strcmp(initByteOrderExact, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
+			{
+				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
+				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
+			}
+			else
+			{
+				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
+				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+			}
+
+			if (std::strlen(initMajorVersionExact) > 2)
+			{
+				this->majorVersion = new char[]{"\xFF\xFF"};
+			}
+			else
+			{
+				this->majorVersion = new char[std::strlen(initMajorVersionExact)];
+				std::strncpy(this->majorVersion, initMajorVersionExact, std::strlen(initMajorVersionExact));
+			}
+
+			if (std::strlen(initMinorVersionExact) > 2)
+			{
+				this->minorVersion = new char[]{"\xFF\xFF"};
+			}
+			else
+			{
+				this->minorVersion = new char[std::strlen(initMinorVersionExact)];
+				std::strncpy(this->minorVersion, initMinorVersionExact, std::strlen(initMinorVersionExact));
+			}
+			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
 		}
 
-		sectionHeaderBlock::~sectionHeaderBlock() {
+		sectionHeaderBlock::~sectionHeaderBlock()
+		{
 			/* Note: ~block() will be triggered automatically */
 			delete[] this->byteOrder;
 			delete[] this->majorVersion;
@@ -77,7 +141,8 @@ namespace wayne {
 			options.clear(); // @suppress("Method cannot be resolved")
 		}
 
-		sectionHeaderBlock::sectionHeaderBlock(const sectionHeaderBlock &other) {
+		sectionHeaderBlock::sectionHeaderBlock(const sectionHeaderBlock &other)
+		{
 			//block(other);
 			delete[] this->byteOrder;
 			this->byteOrder = new char[std::strlen(other.byteOrder)];
@@ -99,7 +164,8 @@ namespace wayne {
 			}
 		}
 
-		sectionHeaderBlock::sectionHeaderBlock(sectionHeaderBlock &&other) {
+		sectionHeaderBlock::sectionHeaderBlock(sectionHeaderBlock &&other)
+		{
 			//block(other);
 			delete[] this->byteOrder;
 			this->byteOrder = new char[std::strlen(other.byteOrder)];
@@ -131,7 +197,8 @@ namespace wayne {
 			other.options.clear(); // @suppress("Method cannot be resolved")
 		}
 
-		sectionHeaderBlock& sectionHeaderBlock::operator=(const sectionHeaderBlock &other) {
+		sectionHeaderBlock& sectionHeaderBlock::operator=(const sectionHeaderBlock &other)
+		{
 			if (this != &other)
 			{
 				//block(other);
@@ -157,7 +224,8 @@ namespace wayne {
 			return *this;
 		}
 
-		sectionHeaderBlock& sectionHeaderBlock::operator=(sectionHeaderBlock &&other) {
+		sectionHeaderBlock& sectionHeaderBlock::operator=(sectionHeaderBlock &&other)
+		{
 			if (this != &other)
 			{
 				//block(other);
@@ -322,8 +390,97 @@ namespace wayne {
 			}
 		}
 
+		optionTypes* sectionHeaderBlock::getAllOptionsKeys()
+		{
+			optionTypes* allKeys = new optionTypes[this->options.size()]; // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+			int counter = 0;
+			for (auto const& [key, option] : this->options) // @suppress("Symbol is not resolved")
+			{
+				allKeys[counter] = key;
+				counter++;
+			}
+			return allKeys;
+		}
 
+		size_t sectionHeaderBlock::getAllOptionsCount()
+		{
+			return options.size(); // @suppress("Method cannot be resolved")
+		}
 
+		bool sectionHeaderBlock::isOptionExist(optionTypes option)
+		{
+			//optionTypes* allKeys = new optionTypes[this->options.size()]; // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+			for (auto const& [key, value] : this->options) // @suppress("Symbol is not resolved")
+			{
+				if (key == option)
+				{
+					return true;
+				}
+			}
+			return false;
+
+		}
+
+		char* sectionHeaderBlock::getOption(optionTypes option)
+		{
+			if (isOptionExist(option))
+			{
+				return this->options[option];
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+
+		std::string sectionHeaderBlock::getOptionString(optionTypes option)
+		{
+			if (isOptionExist(option))
+			{
+				std::string toReturn(this->options[option]); // @suppress("Invalid arguments")
+				return toReturn;
+			}
+			else
+			{
+				return (std::string)"";
+			}
+		}
+
+		bool sectionHeaderBlock::setOption(optionTypes option, const char* value)
+		{
+			if (isOptionAcceptable(option))
+			{
+				delete[] options[option];
+				char* newOption = new char[std::strlen(value)];
+				std::strncpy(newOption, value, std::strlen(value));
+				this->options.insert(std::pair<optionTypes, char*>(option, newOption)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		bool sectionHeaderBlock::setOptionString(optionTypes option, std::string value)
+		{
+			return setOption(option, value.c_str());
+		}
+
+		bool sectionHeaderBlock::isOptionAcceptable(optionTypes option)
+		{
+			switch (option)
+			{
+			case optionTypes::SHB_HARDWARE:
+			case optionTypes::SHB_OS:
+			case optionTypes::SHB_USERAPPL:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+			}
+		}
 
 
 	} /* namespace PCAP */

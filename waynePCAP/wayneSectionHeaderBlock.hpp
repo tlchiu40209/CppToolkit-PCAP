@@ -46,6 +46,15 @@ namespace wayne {
 				void setMinorVersion(size_t newMinorVersion);
 				void setMinorVersionExact(const char* newMinorVersion);
 
+				optionTypes* getAllOptionsKeys();
+				size_t getAllOptionsCount();
+				bool isOptionExist(optionTypes option);
+
+				char* getOption(optionTypes option);
+				std::string getOptionString(optionTypes option);
+				bool setOption(optionTypes option, const char* value);
+				bool setOptionString(optionTypes option, std::string value);
+				bool isOptionAcceptable(optionTypes option);
 		};
 	} /* namespace PCAP */
 } /* namespace wayne */
