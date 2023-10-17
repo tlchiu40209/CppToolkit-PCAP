@@ -46,6 +46,13 @@ namespace wayne {
 				void setMinorVersion(size_t newMinorVersion);
 				void setMinorVersionExact(const char* newMinorVersion);
 
+				size_t getSectionLength();
+				char* getSectionLengthExact();
+				bool updateSectionLength(size_t deltaLength, bool isPositive);
+				bool updateSectionLengthExact(const char* unsignedDeltaLengthExact, bool isPositive);
+				void setSectionLengthDirect(size_t exactLength);
+				void setSectionLengthDirectExact(const char* unsignedExactLengthExact);
+
 				optionTypes* getAllOptionsKeys();
 				size_t getAllOptionsCount();
 				bool isOptionExist(optionTypes option);

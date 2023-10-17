@@ -390,6 +390,76 @@ namespace wayne {
 			}
 		}
 
+		size_t sectionHeaderBlock::getSectionLength()
+		{
+			return (size_t)*this->sectionLength;
+		}
+
+		char* sectionHeaderBlock::getSectionLengthExact()
+		{
+			char *toReturn = new char[std::strlen(this->sectionLength)];
+			std::strncpy(toReturn, this->sectionLength, std::strlen(this->sectionLength));
+			return toReturn;
+		}
+
+		bool sectionHeaderBlock::updateSectionLength(size_t deltaLength, bool isPositive)
+		{
+			if (isPositive)
+			{
+				*(size_t*)this->sectionLength += deltaLength;
+				return true;
+			}
+			else
+			{
+				if (deltaLength > *(size_t*)this->sectionLength)
+				{
+					return false;
+				}
+				else
+				{
+					*(size_t*)this->sectionLength -= deltaLength;
+					return true;
+				}
+			}
+
+
+		}
+
+		bool sectionHeaderBlock::updateSectionLengthExact(const char* unsignedDeltaLengthExact, bool isPositive)
+		{
+			if (isPositive)
+			{
+				*(size_t*)this->sectionLength += *(size_t*)unsignedDeltaLengthExact;
+				return true;
+			}
+			else
+			{
+				if (*(size_t*)unsignedDeltaLengthExact > *(size_t*)this->sectionLength)
+				{
+					return false;
+				}
+				else
+				{
+					*(size_t*)this->sectionLength -= *(size_t*)unsignedDeltaLengthExact;
+					return true;
+				}
+			}
+		}
+
+		void sectionHeaderBlock::setSectionLengthDirect(size_t exactLength)
+		{
+			delete[] this->sectionLength;
+			this->sectionLength = new char[std::strlen((char*)&exactLength)];
+			std::strncpy(this->sectionLength, (char*)&exactLength, std::strlen((char*)&exactLength));
+		}
+
+		void sectionHeaderBlock::setSectionLengthDirectExact(const char* unsignedExactLengthExact)
+		{
+			delete[] this->sectionLength;
+			this->sectionLength = new char[std::strlen(unsignedExactLengthExact)];
+			std::strncpy(this->sectionLength, unsignedExactLengthExact, std::strlen(unsignedExactLengthExact));
+		}
+
 		optionTypes* sectionHeaderBlock::getAllOptionsKeys()
 		{
 			optionTypes* allKeys = new optionTypes[this->options.size()]; // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
