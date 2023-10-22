@@ -5,7 +5,7 @@
  *      Author: weich
  */
 
-#include "wayneInterfaceDescriptionBlock.h"
+#include "wayneInterfaceDescriptionBlock.hpp"
 
 namespace wayne {
 namespace PCAP {

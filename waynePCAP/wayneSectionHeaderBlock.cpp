@@ -11,13 +11,17 @@ namespace wayne {
 	namespace PCAP {
 
 		sectionHeaderBlock::sectionHeaderBlock()
-				{
+		{
 			//block();
-			this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-			std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-			this->majorVersion = new char[]{"\x00\x01"};
-			this->minorVersion = new char[]{"\x00\x00"};
-			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
+			this->byteOrder = wayne::numberUtil::intToHexBytesStatic(endianTypes::SMALL, true, 4);
+			//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+			//this->majorVersion = new char[]{"\x00\x01"};
+			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
+			//this->minorVersion = new char[]{"\x00\x00"};
+			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
+			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder)
@@ -25,21 +29,27 @@ namespace wayne {
 			switch (initByteOrder)
 			{
 			case endianTypes::BIG:
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
+				//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
+				//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
 				break;
 			case endianTypes::SMALL:
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+				//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
+				//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
 				break;
 			}
-			this->majorVersion = new char[]{"\x00\x01"};
-			this->minorVersion = new char[]{"\x00\x00"};
-			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			//this->majorVersion = new char[]{"\x00\x01"};
+			//this->minorVersion = new char[]{"\x00\x00"};
+			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
+			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
+			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(const char* initByteOrderExact)
 		{
+			/*
 			if (std::strcmp(initByteOrderExact, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
 			{
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
@@ -50,22 +60,41 @@ namespace wayne {
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
 				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
 			}
+
 			this->majorVersion = new char[]{"\x00\x01"};
 			this->minorVersion = new char[]{"\x00\x00"};
 			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			*/
+			if (std::strcmp(initByteOrderExact, wayne::numberUtil::intToHexBytesStatic(endianTypes::BIG, true, 4)) == 0)
+			{
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
+			}
+			else
+			{
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
+			}
+			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
+			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
+			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
 		}
 
-		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder, size_t initMajorVersion, size_t initMinorVersion)
+		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder, int initMajorVersion, int initMinorVersion)
 		{
 			switch (initByteOrder)
 			{
 			case endianTypes::BIG:
+				/*
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
 				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
+				*/
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
 				break;
 			case endianTypes::SMALL:
+				/*
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
 				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+				*/
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
 				break;
 			}
 
@@ -75,8 +104,11 @@ namespace wayne {
 			}
 			else
 			{
+				/*
 				this->minorVersion = new char[std::strlen((char*)&initMajorVersion)];
 				std::strncpy(this->minorVersion, (char*)&initMajorVersion, std::strlen((char*)&initMajorVersion));
+				*/
+				this->majorVersion = wayne::numberUtil::intToHexBytes(initMajorVersion, true, 2);
 			}
 
 			if (initMinorVersion >= 65535)
@@ -85,15 +117,20 @@ namespace wayne {
 			}
 			else
 			{
+				/*
 				this->minorVersion = new char[std::strlen((char*)&initMinorVersion)];
 				std::strncpy(this->minorVersion, (char*)&initMinorVersion, std::strlen((char*)&initMinorVersion));
+				*/
+				this->minorVersion = wayne::numberUtil::intToHexBytes(initMajorVersion, true, 2);
 			}
 
-			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(const char* initByteOrderExact, const char* initMajorVersionExact, const char* initMinorVersionExact)
 		{
+			/*
 			if (std::strcmp(initByteOrderExact, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
 			{
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
@@ -103,6 +140,14 @@ namespace wayne {
 			{
 				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
 				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
+			}*/
+			if (std::strcmp(initByteOrderExact, wayne::numberUtil::intToHexBytesStatic(endianTypes::BIG, true, 4)) == 0)
+			{
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
+			}
+			else
+			{
+				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
 			}
 
 			if (std::strlen(initMajorVersionExact) > 2)
@@ -124,7 +169,7 @@ namespace wayne {
 				this->minorVersion = new char[std::strlen(initMinorVersionExact)];
 				std::strncpy(this->minorVersion, initMinorVersionExact, std::strlen(initMinorVersionExact));
 			}
-			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
+			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
 		}
 
 		sectionHeaderBlock::~sectionHeaderBlock()
@@ -406,7 +451,7 @@ namespace wayne {
 		{
 			if (isPositive)
 			{
-				*(size_t*)this->sectionLength += deltaLength;
+				*(size_t*)this->sectionLength = *(size_t*)this->sectionLength + deltaLength;
 				return true;
 			}
 			else

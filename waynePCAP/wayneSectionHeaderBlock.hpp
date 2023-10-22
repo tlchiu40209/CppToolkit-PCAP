@@ -9,6 +9,7 @@
 #define LIB_WAYNEPCAP_WAYNESECTIONHEADERBLOCK_HPP_
 
 #include "wayneBlock.hpp"
+#include "wayneNumberUtil.hpp"
 #include <map>
 
 namespace wayne {
@@ -24,7 +25,7 @@ namespace wayne {
 				sectionHeaderBlock();
 				sectionHeaderBlock(endianTypes initByteOrder);
 				sectionHeaderBlock(const char* initByteOrderExact);
-				sectionHeaderBlock(endianTypes initByteOrder, size_t initMajorVersion, size_t initMinorVersion);
+				sectionHeaderBlock(endianTypes initByteOrder, int initMajorVersion, int initMinorVersion);
 				sectionHeaderBlock(const char* initByteOrderExact, const char* initMajorVersionExact, const char* initMinorVersionExact);
 				virtual ~sectionHeaderBlock();
 				sectionHeaderBlock(const sectionHeaderBlock &other);
