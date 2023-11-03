@@ -11,9 +11,17 @@ namespace wayne {
 	namespace PCAP {
 
 		block::block() {
-			this->blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_ENHANCED_PACKET)];
-			std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_ENHANCED_PACKET, std::strlen(byteSeqs::BLOCK_TYPE_ENHANCED_PACKET));
-			this->blockLength = new char[]{"\x00"};
+			setBlockType(blockTypes::ENHANCED_PACKET);
+			setBlockLength(0);
+			updateBlockLength(structByteLength::BLOCK_TYPE_LENGTH + structByteLength::BLOCK_LENGTH_LENGTH + structByteLength::BLOCK_LENGTH_LENGTH);
+			/*BlockType took 4 bytes, BlockLength took 8 bytes.*/
+		}
+
+		block::block(blockTypes type) {
+			setBlockType(type);
+			setBlockLength(0);
+			updateBlockLength(structByteLength::BLOCK_TYPE_LENGTH + structByteLength::BLOCK_LENGTH_LENGTH + structByteLength::BLOCK_LENGTH_LENGTH);
+			/*BlockType took 4 bytes, BlockLength took 8 bytes.*/
 		}
 
 		block::~block() {
@@ -22,17 +30,17 @@ namespace wayne {
 		}
 
 		block::block(const block &other) { /*Copy constructor*/
-			this->blockType = new char[std::strlen(other.blockType)];
-			std::strncpy(this->blockType, other.blockType, std::strlen(other.blockType));
-			this->blockLength = new char[std::strlen(other.blockLength)];
-			std::strncpy(this->blockLength, other.blockLength, std::strlen(other.blockLength));
+			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+			std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
+			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
+			std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
 		}
 
 		block::block(block &&other) { /*Move Constructor*/
-			this->blockType = new char[std::strlen(other.blockType)];
-			std::strncpy(this->blockType, other.blockType, std::strlen(other.blockType));
-			this->blockLength = new char[std::strlen(other.blockLength)];
-			std::strncpy(this->blockLength, other.blockLength, std::strlen(other.blockLength));
+			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+			std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
+			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
+			std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
 
 			delete[] other.blockType;
 			delete[] other.blockLength;
@@ -42,11 +50,11 @@ namespace wayne {
 			if (this != &other)
 			{
 				delete[] this->blockType;
-				this->blockType = new char[std::strlen(other.blockType)];
-				std::strncpy(this->blockType, other.blockType, std::strlen(other.blockType));
+				this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+				std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
 				delete[] this->blockLength;
-				this->blockLength = new char[std::strlen(other.blockLength)];
-				std::strncpy(this->blockLength, other.blockLength, std::strlen(other.blockLength));
+				this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
+				std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
 			}
 			return *this;
 		}
@@ -55,11 +63,11 @@ namespace wayne {
 			if (this != &other)
 			{
 				delete[] this->blockType;
-				this->blockType = new char[std::strlen(other.blockType)];
-				std::strncpy(this->blockType, other.blockType, std::strlen(other.blockType));
+				this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+				std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
 				delete[] this->blockLength;
-				this->blockLength = new char[std::strlen(other.blockLength)];
-				std::strncpy(this->blockLength, other.blockLength, std::strlen(other.blockLength));
+				this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
+				std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
 
 				delete[] other.blockType;
 				delete[] other.blockLength;
@@ -70,161 +78,79 @@ namespace wayne {
 		void block::setBlockType(char* newBlockType)
 		{
 			delete[] this->blockType;
-			this->blockType = new char[std::strlen(newBlockType)];
-			std::strncpy(this->blockType, newBlockType, std::strlen(newBlockType));
+			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+			std::copy(newBlockType, newBlockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
 		}
 
 		void block::setBlockType(blockTypes type)
 		{
-			switch (type)
-            {
-				case blockTypes::CUSTOM:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_CUSTOM)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_CUSTOM, std::strlen(byteSeqs::BLOCK_TYPE_CUSTOM));
-					break;
-				}
-				case blockTypes::CUSTOM_CONST:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_CUSTOM_CONST)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_CUSTOM_CONST, std::strlen(byteSeqs::BLOCK_TYPE_CUSTOM_CONST));
-					break;
-				}
-
-				case blockTypes::DECRYPTION_SECRETS:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_DECRYPTION_SECRETS)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_DECRYPTION_SECRETS, std::strlen(byteSeqs::BLOCK_TYPE_DECRYPTION_SECRETS));
-					break;
-				}
-
-				case blockTypes::ENHANCED_PACKET:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_ENHANCED_PACKET)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_ENHANCED_PACKET, std::strlen(byteSeqs::BLOCK_TYPE_ENHANCED_PACKET));
-					break;
-				}
-
-				case blockTypes::INTERFACE_DESCRIPTION:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_INTERFACE_DESCRIPTION)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_INTERFACE_DESCRIPTION, std::strlen(byteSeqs::BLOCK_TYPE_INTERFACE_DESCRIPTION));
-					break;
-				}
-
-				case blockTypes::INTERFACE_STATISTICS:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_INTERFACE_STATISTICS)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_INTERFACE_STATISTICS, std::strlen(byteSeqs::BLOCK_TYPE_INTERFACE_STATISTICS));
-					break;
-				}
-
-				case blockTypes::NAME_RESOLUTION:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_NAME_RESOLUTION)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_NAME_RESOLUTION, std::strlen(byteSeqs::BLOCK_TYPE_NAME_RESOLUTION));
-					break;
-				}
-
-				case blockTypes::PACKET:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_PACKET)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_PACKET, std::strlen(byteSeqs::BLOCK_TYPE_PACKET));
-					break;
-				}
-
-				case blockTypes::SECTION_HEADER:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_SECTION_HEADER)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_SECTION_HEADER, std::strlen(byteSeqs::BLOCK_TYPE_SECTION_HEADER));
-					break;
-				}
-
-				case blockTypes::SIMPLE_PACKET:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_SIMPLE_PACKET)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_SIMPLE_PACKET, std::strlen(byteSeqs::BLOCK_TYPE_SIMPLE_PACKET));
-					break;
-				}
-
-				case blockTypes::SYSTEMD_JOURNAL_EXPORT:
-				{
-					blockType = new char[std::strlen(byteSeqs::BLOCK_TYPE_SYSTEMD_JOURNAL_EXPORT)];
-					std::strncpy(this->blockType, byteSeqs::BLOCK_TYPE_SYSTEMD_JOURNAL_EXPORT, std::strlen(byteSeqs::BLOCK_TYPE_SYSTEMD_JOURNAL_EXPORT));
-					break;
-				}
-            }
+			delete[] this->blockType;
+			this->blockType = wayne::numberUtil::numberToBytesStatic((int)type);
 		}
 
 		blockTypes block::getBlockType()
 		{
-			if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_CUSTOM) == 0)
-			{
-					return blockTypes::CUSTOM;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_CUSTOM_CONST) == 0)
-			{
-					return blockTypes::CUSTOM_CONST;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_DECRYPTION_SECRETS)== 0)
-			{
-					return blockTypes::DECRYPTION_SECRETS;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_ENHANCED_PACKET) == 0)
-			{
-					return blockTypes::ENHANCED_PACKET;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_INTERFACE_DESCRIPTION) == 0)
-			{
-					return blockTypes::INTERFACE_DESCRIPTION;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_INTERFACE_STATISTICS) == 0)
-			{
-					return blockTypes::INTERFACE_STATISTICS;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_NAME_RESOLUTION) == 0)
-			{
-					return blockTypes::NAME_RESOLUTION;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_PACKET) == 0)
-			{
-					return blockTypes::PACKET;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_SECTION_HEADER) == 0)
-			{
-					return blockTypes::SECTION_HEADER;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_SIMPLE_PACKET) == 0)
-			{
-					return blockTypes::SIMPLE_PACKET;
-			}
-			else if (std::strcmp(this->blockType, byteSeqs::BLOCK_TYPE_SYSTEMD_JOURNAL_EXPORT) == 0)
-			{
-					return blockTypes::SYSTEMD_JOURNAL_EXPORT;
-			}
-			else
-			{
-					return blockTypes::CUSTOM;
-			}
+			return (blockType)(wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER));
 		}
 
 		char* block::getBlockTypeExact()
 		{
-			char* toReturn = new char[std::strlen(this->blockType)];
-			std::strncpy(toReturn, this->blockType, std::strlen(this->blockType));
+			char* toReturn = new char[structByteLength::BLOCK_TYPE_LENGTH];
+			std::copy(this->blockType, this->blockType + structByteLength::BLOCK_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		size_t block::getBlockLength()
+		int block::getBlockLength()
 		{
-			return (size_t)((unsigned int)std::strtol(blockLength, NULL, 16));
+			return wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER);
 		}
 
 		char* block::getBlockLengthExact()
 		{
 			char* toReturn = new char[std::strlen(this->blockLength)];
-			std::strncpy(toReturn, this->blockLength, std::strlen(this->blockLength));
+			std::copy(this->blockLength, this->blockLength + structByteLength::BLOCK_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
+
+		bool block::updateBlockLength(int deltaLength)
+		{
+			if (deltaLength % 4 != 0)
+			{
+				wayne::IO::logLn("PCAPNG only allows size update with the size of 4.", true);
+				return false;
+			}
+			unsigned int blockLengthRecovered = wayne::numberUtil::bytesStaticToNumber(this->blockLength, blockLengthRecovered);
+			delete this->blockLength;
+			if (blockLengthRecovered + deltaLength < 0) {
+				this->blockLength = wayne::numberUtil::numberToBytes((unsigned int)0);
+				return false;
+			} else {
+				blockLengthRecovered += deltaLength;
+				this->blockLength = wayne::numberUtil::numberToBytes(blockLengthRecovered);
+				return true;
+			}
+		}
+
+		bool block::updateBlockLengthExact(const char* deltaLengthExact)
+		{
+			int deltaLengthRecovered = wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered);
+			return updateBlockLength(deltaLengthRecovered);
+		}
+
+		void block::setBlockLength(unsigned int exactLength)
+		{
+			delete[] this->blockLength;
+			this->blockLength = wayne::numberUtil::numberToBytesStatic(exactLength);
+
+		}
+
+		void block::setBlockLengthExact(const char* exactLengthExact)
+		{
+			delete[] this->blockLength;
+			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
+			std::copy(exactLengthExact, exactLengthExact + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
+
+		}
+
 	} /* namespace PCAP */
 } /* namespace wayne */

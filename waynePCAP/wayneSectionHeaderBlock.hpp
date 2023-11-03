@@ -24,9 +24,7 @@ namespace wayne {
 			public:
 				sectionHeaderBlock();
 				sectionHeaderBlock(endianTypes initByteOrder);
-				sectionHeaderBlock(const char* initByteOrderExact);
-				sectionHeaderBlock(endianTypes initByteOrder, int initMajorVersion, int initMinorVersion);
-				sectionHeaderBlock(const char* initByteOrderExact, const char* initMajorVersionExact, const char* initMinorVersionExact);
+				sectionHeaderBlock(endianTypes initByteOrder, short initMajorVersion, short initMinorVersion);
 				virtual ~sectionHeaderBlock();
 				sectionHeaderBlock(const sectionHeaderBlock &other);
 				sectionHeaderBlock(sectionHeaderBlock &&other);
@@ -37,32 +35,36 @@ namespace wayne {
 				endianTypes getByteOrder();
 				char* getByteOrderExact();
 
-				size_t getMajorVersion();
+				short getMajorVersion();
 				char* getMajorVersionExact();
-				void setMajorVersion(size_t newMajorVersion);
+				void setMajorVersion(unsigned short newMajorVersion);
 				void setMajorVersionExact(const char* newMajorVersion);
 
-				size_t getMinorVersion();
+				short getMinorVersion();
 				char* getMinorVersionExact();
-				void setMinorVersion(size_t newMinorVersion);
+				void setMinorVersion(unsigned short newMinorVersion);
 				void setMinorVersionExact(const char* newMinorVersion);
 
-				size_t getSectionLength();
+				long getSectionLength();
 				char* getSectionLengthExact();
-				bool updateSectionLength(size_t deltaLength, bool isPositive);
-				bool updateSectionLengthExact(const char* unsignedDeltaLengthExact, bool isPositive);
-				void setSectionLengthDirect(size_t exactLength);
-				void setSectionLengthDirectExact(const char* unsignedExactLengthExact);
+				bool updateSectionLength(long deltaLength);
+				bool updateSectionLengthExact(const char* deltaLengthExact);
+				void setSectionLengthDirect(unsigned long exactLength);
+				void setSectionLengthDirectExact(const char* exactLengthExact);
 
 				optionTypes* getAllOptionsKeys();
-				size_t getAllOptionsCount();
+				int getAllOptionsCount();
 				bool isOptionExist(optionTypes option);
 
 				char* getOption(optionTypes option);
 				std::string getOptionString(optionTypes option);
-				bool setOption(optionTypes option, const char* value);
+				unsigned short getOptionLength(optionTypes option);
+				bool setOption(optionTypes option, const char* value, unsigned int valueLength);
 				bool setOptionString(optionTypes option, std::string value);
+
 				bool isOptionAcceptable(optionTypes option);
+				bool isDynamicLengthOption(optionTypes option);
+				bool isStaticLengthOption(optionTypes option);
 		};
 	} /* namespace PCAP */
 } /* namespace wayne */

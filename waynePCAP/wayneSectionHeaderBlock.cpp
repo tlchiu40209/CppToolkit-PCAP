@@ -12,165 +12,64 @@ namespace wayne {
 
 		sectionHeaderBlock::sectionHeaderBlock()
 		{
-			//block();
-			//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-			this->byteOrder = wayne::numberUtil::intToHexBytesStatic(endianTypes::SMALL, true, 4);
-			//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-			//this->majorVersion = new char[]{"\x00\x01"};
-			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
-			//this->minorVersion = new char[]{"\x00\x00"};
-			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
-			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
-			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
+			this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+			if (wayne::numberUtil::isBigEndian()) {
+				std::copy(endianTypesBytes::ENDIAN_TYPE_BIG_BYTES, endianTypesBytes::ENDIAN_TYPE_BIG_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
+			} else {
+				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
+			}
+			this->majorVersion = wayne::numberUtil::numberToBytesStatic((unsigned short)1);
+			this->minorVersion = wayne::numberUtil::numberToBytesStatic((unsigned short)0);
+			this->sectionLength = wayne::numberUtil::numberToBytesStatic((unsigned long)-1);
+
+			updateBlockLength(structByteLength::BYTE_ORDER_LENGTH);
+			updateBlockLength(structByteLength::MAJOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::MINOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::SECTION_LENGTH_LENGTH);
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder)
 		{
-			switch (initByteOrder)
-			{
-			case endianTypes::BIG:
-				//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
-				//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
+			this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+			switch (initByteOrder) {
+			case endianTypes::ENDIAN_TYPE_BIG:
+				std::copy(endianTypesBytes::ENDIAN_TYPE_BIG_BYTES, endianTypesBytes::ENDIAN_TYPE_BIG_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				break;
-			case endianTypes::SMALL:
-				//this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-				//std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
+			case endianTypes::ENDIAN_TYPE_SMALL:
+				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				break;
 			}
-			//this->majorVersion = new char[]{"\x00\x01"};
-			//this->minorVersion = new char[]{"\x00\x00"};
-			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
-			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
-			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
-			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
+			this->majorVersion = wayne::numberUtil::numberToBytesStatic((unsigned short)1);
+			this->minorVersion = wayne::numberUtil::numberToBytesStatic((unsigned short)0);
+			this->sectionLength = wayne::numberUtil::numberToBytesStatic((unsigned long)-1);
+
+			updateBlockLength(structByteLength::BYTE_ORDER_LENGTH);
+			updateBlockLength(structByteLength::MAJOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::MINOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::SECTION_LENGTH_LENGTH);
 		}
 
-		sectionHeaderBlock::sectionHeaderBlock(const char* initByteOrderExact)
+		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder, short initMajorVersion, short initMinorVersion)
 		{
-			/*
-			if (std::strcmp(initByteOrderExact, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
-			{
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
-			}
-			else
-			{
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-			}
-
-			this->majorVersion = new char[]{"\x00\x01"};
-			this->minorVersion = new char[]{"\x00\x00"};
-			this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
-			*/
-			if (std::strcmp(initByteOrderExact, wayne::numberUtil::intToHexBytesStatic(endianTypes::BIG, true, 4)) == 0)
-			{
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
-			}
-			else
-			{
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
-			}
-			this->majorVersion = wayne::numberUtil::intToHexBytesStatic(1, true, 2);
-			this->minorVersion = wayne::numberUtil::intToHexBytesStatic(0, true, 2);
-			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
-		}
-
-		sectionHeaderBlock::sectionHeaderBlock(endianTypes initByteOrder, int initMajorVersion, int initMinorVersion)
-		{
-			switch (initByteOrder)
-			{
-			case endianTypes::BIG:
-				/*
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
-				*/
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
+			this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+			switch (initByteOrder) {
+			case endianTypes::ENDIAN_TYPE_BIG:
+				std::copy(endianTypesBytes::ENDIAN_TYPE_BIG_BYTES, endianTypesBytes::ENDIAN_TYPE_BIG_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				break;
-			case endianTypes::SMALL:
-				/*
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-				*/
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
+			case endianTypes::ENDIAN_TYPE_SMALL:
+				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				break;
 			}
+			this->majorVersion = wayne::numberUtil::numberToBytesStatic(initMajorVersion);
+			this->minorVersion = wayne::numberUtil::numberToBytesStatic(initMinorVersion);
+			this->sectionLength = wayne::numberUtil::numberToBytesStatic((long long)-1);
 
-			if (initMajorVersion >= 65535)
-			{
-				this->majorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				/*
-				this->minorVersion = new char[std::strlen((char*)&initMajorVersion)];
-				std::strncpy(this->minorVersion, (char*)&initMajorVersion, std::strlen((char*)&initMajorVersion));
-				*/
-				this->majorVersion = wayne::numberUtil::intToHexBytes(initMajorVersion, true, 2);
-			}
-
-			if (initMinorVersion >= 65535)
-			{
-				this->minorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				/*
-				this->minorVersion = new char[std::strlen((char*)&initMinorVersion)];
-				std::strncpy(this->minorVersion, (char*)&initMinorVersion, std::strlen((char*)&initMinorVersion));
-				*/
-				this->minorVersion = wayne::numberUtil::intToHexBytes(initMajorVersion, true, 2);
-			}
-
-			//this->sectionLength = new char[]{"\x00\x00\x00\x00\x00\x00\x00\x00"};
-			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
+			updateBlockLength(structByteLength::BYTE_ORDER_LENGTH);
+			updateBlockLength(structByteLength::MAJOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::MINOR_VERSION_LENGTH);
+			updateBlockLength(structByteLength::SECTION_LENGTH_LENGTH);
 		}
 
-		sectionHeaderBlock::sectionHeaderBlock(const char* initByteOrderExact, const char* initMajorVersionExact, const char* initMinorVersionExact)
-		{
-			/*
-			if (std::strcmp(initByteOrderExact, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
-			{
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_BIG_ENDIAN));
-			}
-			else
-			{
-				this->byteOrder = new char[std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN)];
-				std::strncpy(this->byteOrder, byteSeqs::BYTE_ORDER_SMALL_ENDIAN, std::strlen(byteSeqs::BYTE_ORDER_SMALL_ENDIAN));
-			}*/
-			if (std::strcmp(initByteOrderExact, wayne::numberUtil::intToHexBytesStatic(endianTypes::BIG, true, 4)) == 0)
-			{
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::BIG, true, 4);
-			}
-			else
-			{
-				this->byteOrder = wayne::numberUtil::intToHexBytes(endianTypes::SMALL, true, 4);
-			}
-
-			if (std::strlen(initMajorVersionExact) > 2)
-			{
-				this->majorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->majorVersion = new char[std::strlen(initMajorVersionExact)];
-				std::strncpy(this->majorVersion, initMajorVersionExact, std::strlen(initMajorVersionExact));
-			}
-
-			if (std::strlen(initMinorVersionExact) > 2)
-			{
-				this->minorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->minorVersion = new char[std::strlen(initMinorVersionExact)];
-				std::strncpy(this->minorVersion, initMinorVersionExact, std::strlen(initMinorVersionExact));
-			}
-			this->sectionLength = wayne::numberUtil::intToHexBytesStatic(0, true, 8);
-		}
 
 		sectionHeaderBlock::~sectionHeaderBlock()
 		{
@@ -190,21 +89,21 @@ namespace wayne {
 		{
 			//block(other);
 			delete[] this->byteOrder;
-			this->byteOrder = new char[std::strlen(other.byteOrder)];
-			std::strncpy(this->byteOrder, other.byteOrder, std::strlen(other.byteOrder));
+			this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+			std::copy(other.byteOrder, other.byteOrder + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 			delete[] this->majorVersion;
-			this->majorVersion = new char[std::strlen(other.majorVersion)];
-			std::strncpy(this->majorVersion, other.majorVersion, std::strlen(other.majorVersion));
+			this->majorVersion = new char[structByteLength::MAJOR_VERSION_LENGTH];
+			std::copy(other.majorVersion, other.majorVersion + structByteLength::MAJOR_VERSION_LENGTH, this->majorVersion);
 			delete[] this->minorVersion;
-			this->minorVersion = new char[std::strlen(other.minorVersion)];
-			std::strncpy(this->minorVersion, other.minorVersion, std::strlen(other.minorVersion));
+			this->minorVersion = new char[structByteLength::MINOR_VERSION_LENGTH];
+			std::copy(other.minorVersion, other.minorVersion + structByteLength::MINOR_VERSION_LENGTH, this->minorVersion);
 			delete[] this->sectionLength;
-			this->sectionLength = new char[std::strlen(other.sectionLength)];
-			std::strncpy(this->sectionLength, other.sectionLength, std::strlen(other.sectionLength));
+			this->sectionLength = new char[structByteLength::SECTION_LENGTH_LENGTH];
+			std::copy(other.sectionLength, other.sectionLength + structByteLength::SECTION_LENGTH_LENGTH, this->sectionLength);
 			for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
 			{
 				char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-				std::strncpy(newOption, option, std::strlen(option)); // @suppress("Invalid arguments")
+				std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
 				this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
 			}
 		}
@@ -213,29 +112,29 @@ namespace wayne {
 		{
 			//block(other);
 			delete[] this->byteOrder;
-			this->byteOrder = new char[std::strlen(other.byteOrder)];
-			std::strncpy(this->byteOrder, other.byteOrder, std::strlen(other.byteOrder));
+			this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+			std::copy(other.byteOrder, other.byteOrder + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 			delete[] other.byteOrder;
 
 			delete[] this->majorVersion;
-			this->majorVersion = new char[std::strlen(other.majorVersion)];
-			std::strncpy(this->majorVersion, other.majorVersion, std::strlen(other.majorVersion));
+			this->majorVersion = new char[structByteLength::MAJOR_VERSION_LENGTH];
+			std::copy(other.majorVersion, other.majorVersion + structByteLength::MAJOR_VERSION_LENGTH, this->majorVersion);
 			delete[] other.majorVersion;
 
 			delete[] this->minorVersion;
-			this->minorVersion = new char[std::strlen(other.minorVersion)];
-			std::strncpy(this->minorVersion, other.minorVersion, std::strlen(other.minorVersion));
+			this->minorVersion = new char[structByteLength::MINOR_VERSION_LENGTH];
+			std::copy(other.minorVersion, other.minorVersion + structByteLength::MINOR_VERSION_LENGTH, this->minorVersion);
 			delete[] other.minorVersion;
 
 			delete[] this->sectionLength;
-			this->sectionLength = new char[std::strlen(other.sectionLength)];
-			std::strncpy(this->sectionLength, other.sectionLength, std::strlen(other.sectionLength));
+			this->sectionLength = new char[structByteLength::SECTION_LENGTH_LENGTH];
+			std::copy(other.sectionLength, other.sectionLength + structByteLength::SECTION_LENGTH_LENGTH, this->sectionLength);
 			delete[] other.sectionLength;
 
 			for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
 			{
 				char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-				std::strncpy(newOption, option, std::strlen(option)); // @suppress("Invalid arguments")
+				std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
 				this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
 				delete[] option;
 			}
@@ -248,21 +147,21 @@ namespace wayne {
 			{
 				//block(other);
 				delete[] this->byteOrder;
-				this->byteOrder = new char[std::strlen(other.byteOrder)];
-				std::strncpy(this->byteOrder, other.byteOrder, std::strlen(other.byteOrder));
+				this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+				std::copy(other.byteOrder, other.byteOrder + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				delete[] this->majorVersion;
-				this->majorVersion = new char[std::strlen(other.majorVersion)];
-				std::strncpy(this->majorVersion, other.majorVersion, std::strlen(other.majorVersion));
+				this->majorVersion = new char[structByteLength::MAJOR_VERSION_LENGTH];
+				std::copy(other.majorVersion, other.majorVersion + structByteLength::MAJOR_VERSION_LENGTH, this->majorVersion);
 				delete[] this->minorVersion;
-				this->minorVersion = new char[std::strlen(other.minorVersion)];
-				std::strncpy(this->minorVersion, other.minorVersion, std::strlen(other.minorVersion));
+				this->minorVersion = new char[structByteLength::MINOR_VERSION_LENGTH];
+				std::copy(other.minorVersion, other.minorVersion + structByteLength::MINOR_VERSION_LENGTH, this->minorVersion);
 				delete[] this->sectionLength;
-				this->sectionLength = new char[std::strlen(other.sectionLength)];
-				std::strncpy(this->sectionLength, other.sectionLength, std::strlen(other.sectionLength));
+				this->sectionLength = new char[structByteLength::SECTION_LENGTH_LENGTH];
+				std::copy(other.sectionLength, other.sectionLength + structByteLength::SECTION_LENGTH_LENGTH, this->sectionLength);
 				for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
 				{
 					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::strncpy(newOption, option, std::strlen(option)); // @suppress("Invalid arguments")
+					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
 					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
 				}
 			}
@@ -273,31 +172,30 @@ namespace wayne {
 		{
 			if (this != &other)
 			{
-				//block(other);
 				delete[] this->byteOrder;
-				this->byteOrder = new char[std::strlen(other.byteOrder)];
-				std::strncpy(this->byteOrder, other.byteOrder, std::strlen(other.byteOrder));
+				this->byteOrder = new char[structByteLength::BYTE_ORDER_LENGTH];
+				std::copy(other.byteOrder, other.byteOrder + structByteLength::BYTE_ORDER_LENGTH, this->byteOrder);
 				delete[] other.byteOrder;
 
 				delete[] this->majorVersion;
-				this->majorVersion = new char[std::strlen(other.majorVersion)];
-				std::strncpy(this->majorVersion, other.majorVersion, std::strlen(other.majorVersion));
+				this->majorVersion = new char[structByteLength::MAJOR_VERSION_LENGTH];
+				std::copy(other.majorVersion, other.majorVersion + structByteLength::MAJOR_VERSION_LENGTH, this->majorVersion);
 				delete[] other.majorVersion;
 
 				delete[] this->minorVersion;
-				this->minorVersion = new char[std::strlen(other.minorVersion)];
-				std::strncpy(this->minorVersion, other.minorVersion, std::strlen(other.minorVersion));
+				this->minorVersion = new char[structByteLength::MINOR_VERSION_LENGTH];
+				std::copy(other.minorVersion, other.minorVersion + structByteLength::MINOR_VERSION_LENGTH, this->minorVersion);
 				delete[] other.minorVersion;
 
 				delete[] this->sectionLength;
-				this->sectionLength = new char[std::strlen(other.sectionLength)];
-				std::strncpy(this->sectionLength, other.sectionLength, std::strlen(other.sectionLength));
+				this->sectionLength = new char[structByteLength::SECTION_LENGTH_LENGTH];
+				std::copy(other.sectionLength, other.sectionLength + structByteLength::SECTION_LENGTH_LENGTH, this->sectionLength);
 				delete[] other.sectionLength;
 
 				for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
 				{
 					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::strncpy(newOption, option, std::strlen(option)); // @suppress("Invalid arguments")
+					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
 					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
 					delete[] option;
 				}
@@ -306,29 +204,30 @@ namespace wayne {
 			return *this;
 		}
 
-		bool sectionHeaderBlock::operator ==(const sectionHeaderBlock &other)
+		bool sectionHeaderBlock::operator ==(const sectionHeaderBlock &other) /*Nov 2, this need to be redone.*/
 		{
 			bool isEqual = true;
-			if (isEqual && std::strcmp(this->byteOrder, other.byteOrder) != 0)
-			{
-				isEqual = false;
+			if (wayne::numberUtil::bytesStaticToNumber(this->byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != wayne::numberUtil::bytesStaticToNumber(other.byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)) {
+				return false;
 			}
-			if (isEqual && std::strcmp(this->majorVersion, other.majorVersion) != 0)
-			{
-				isEqual = false;
+
+			if (wayne::numberUtil::bytesStaticToNumber(this->majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT) != wayne::numberUtil::bytesStaticToNumber(other.majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)) {
+				return false;
 			}
-			if (isEqual && std::strcmp(this->minorVersion, other.minorVersion) != 0)
-			{
-				isEqual = false;
+
+			if (wayne::numberUtil::bytesStaticToNumber(this->minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT) != wayne::numberUtil::bytesStaticToNumber(other.minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)) {
+				return false;
 			}
-			if (isEqual && std::strcmp(this->sectionLength, other.sectionLength) != 0)
-			{
-				isEqual = false;
+
+			if (wayne::numberUtil::bytesStaticToNumber(this->sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG) != wayne::numberUtil::bytesStaticToNumber(other.sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG)) {
+				return false;
 			}
+
 			if (isEqual &&  this->options.size() != other.options.size()) // @suppress("Method cannot be resolved")
 			{
 				isEqual = false;
 			}
+
 			if (isEqual && this->options != other.options)
 			{
 				isEqual = false;
@@ -338,171 +237,115 @@ namespace wayne {
 
 		endianTypes sectionHeaderBlock::getByteOrder()
 		{
-			if (std::strcmp(this->byteOrder, byteSeqs::BYTE_ORDER_BIG_ENDIAN) == 0)
-			{
-				return endianTypes::BIG;
+			if (wayne::numberUtil::bytesStaticToNumber(this->byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES), wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)) {
+				return endianTypes::ENDIAN_TYPE_BIG;
 			}
 			else
 			{
-				return endianTypes::SMALL;
+				return endianTypes::ENDIAN_TYPE_SMALL;
 			}
 		}
 
 		char* sectionHeaderBlock::getByteOrderExact()
 		{
-			char* toReturn = new char[std::strlen(this->byteOrder)];
-			std::strncpy(toReturn, this->byteOrder, std::strlen(this->byteOrder));
+			char* toReturn = new char[structByteLength::BYTE_ORDER_LENGTH];
+			std::copy(this->byteOrder, this->byteOrder + structByteLength::BYTE_ORDER_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		size_t sectionHeaderBlock::getMajorVersion()
+		short sectionHeaderBlock::getMajorVersion()
 		{
-			return (size_t)*this->majorVersion;
+			return wayne::numberUtil::bytesStaticToNumber(this->majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT);
 		}
 
 		char* sectionHeaderBlock::getMajorVersionExact()
 		{
-			char* toReturn = new char[std::strlen(this->majorVersion)];
-			std::strncpy(toReturn, this->majorVersion, std::strlen(this->majorVersion));
+			char* toReturn = new char[structByteLength::MAJOR_VERSION_LENGTH];
+			std::copy(this->majorVersion, this->majorVersion + structByteLength::MAJOR_VERSION_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void sectionHeaderBlock::setMajorVersion(size_t newMajorVersion)
+		void sectionHeaderBlock::setMajorVersion(unsigned short newMajorVersion)
 		{
 			delete[] this->majorVersion;
-			if (newMajorVersion >= 65535)
-			{
-				this->majorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->minorVersion = new char[std::strlen((char*)&newMajorVersion)];
-				std::strncpy(this->minorVersion, (char*)&newMajorVersion, std::strlen((char*)&newMajorVersion));
-			}
+			this->majorVersion = wayne::numberUtil::numberToBytesStatic(newMajorVersion);
 		}
 
 		void sectionHeaderBlock::setMajorVersionExact(const char* newMajorVersion)
 		{
 			delete[] this->majorVersion;
-			if (std::strlen(newMajorVersion) > 2)
-			{
-				this->majorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->majorVersion = new char[std::strlen(newMajorVersion)];
-				std::strncpy(this->majorVersion, newMajorVersion, std::strlen(newMajorVersion));
-			}
+			this->majorVersion = new char[structByteLength::MAJOR_VERSION_LENGTH];
+			std::copy(newMajorVersion, newMajorVersion + structByteLength::MAJOR_VERSION_LENGTH, this->majorVersion);
 		}
 
-		size_t sectionHeaderBlock::getMinorVersion()
+		short sectionHeaderBlock::getMinorVersion()
 		{
-			return (size_t)*this->minorVersion;
+			return wayne::numberUtil::bytesStaticToNumber(this->minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT);
 		}
 
 		char* sectionHeaderBlock::getMinorVersionExact()
 		{
-			char* toReturn = new char[std::strlen(this->minorVersion)];
-			std::strncpy(toReturn, this->minorVersion, std::strlen(this->minorVersion));
+			char* toReturn = new char[structByteLength::MINOR_VERSION_LENGTH];
+			std::copy(this->minorVersion, this->minorVersion + structByteLength::MINOR_VERSION_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void sectionHeaderBlock::setMinorVersion(size_t newMinorVersion)
+		void sectionHeaderBlock::setMinorVersion(unsigned short newMinorVersion)
 		{
 			delete[] this->minorVersion;
-			if (newMinorVersion >= 65535)
-			{
-				this->minorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->minorVersion = new char[std::strlen((char*)&newMinorVersion)];
-				std::strncpy(this->minorVersion, (char*)&newMinorVersion, std::strlen((char*)&newMinorVersion));
-			}
+			this->minorVersion = wayne::numberUtil::numberToBytesStatic(newMinorVersion);
 		}
 
 		void sectionHeaderBlock::setMinorVersionExact(const char* newMinorVersion)
 		{
 			delete[] this->minorVersion;
-			if (std::strlen(newMinorVersion) > 2)
-			{
-				this->minorVersion = new char[]{"\xFF\xFF"};
-			}
-			else
-			{
-				this->minorVersion = new char[std::strlen(newMinorVersion)];
-				std::strncpy(this->minorVersion, newMinorVersion, std::strlen(newMinorVersion));
-			}
+			this->minorVersion = new char[structByteLength::MINOR_VERSION_LENGTH];
+			std::copy(newMinorVersion, newMinorVersion + structByteLength::MINOR_VERSION_LENGTH, this->minorVersion);
 		}
 
-		size_t sectionHeaderBlock::getSectionLength()
+		long sectionHeaderBlock::getSectionLength()
 		{
-			return (size_t)*this->sectionLength;
+			return wayne::numberUtil::bytesStaticToNumber(this->sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG);
 		}
 
 		char* sectionHeaderBlock::getSectionLengthExact()
 		{
-			char *toReturn = new char[std::strlen(this->sectionLength)];
-			std::strncpy(toReturn, this->sectionLength, std::strlen(this->sectionLength));
+			char *toReturn = new char[wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG];
+			std::copy(this->sectionLength, this->sectionLength + structByteLength::SECTION_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		bool sectionHeaderBlock::updateSectionLength(size_t deltaLength, bool isPositive)
+		bool sectionHeaderBlock::updateSectionLength(long deltaLength)
 		{
-			if (isPositive)
-			{
-				*(size_t*)this->sectionLength = *(size_t*)this->sectionLength + deltaLength;
+			unsigned long currentSectionLength = wayne::numberUtil::bytesStaticToNumber(this->sectionLength, currentSectionLength);
+			delete[] this->sectionLength;
+			if (currentSectionLength + deltaLength < 0) {
+				this->sectionLength = wayne::numberUtil::numberToBytes((unsigned long)0);
+				return false;
+			} else {
+				currentSectionLength += deltaLength;
+				this->sectionLength = wayne::numberUtil::numberToBytes(currentSectionLength);
 				return true;
 			}
-			else
-			{
-				if (deltaLength > *(size_t*)this->sectionLength)
-				{
-					return false;
-				}
-				else
-				{
-					*(size_t*)this->sectionLength -= deltaLength;
-					return true;
-				}
-			}
-
-
 		}
 
-		bool sectionHeaderBlock::updateSectionLengthExact(const char* unsignedDeltaLengthExact, bool isPositive)
+		bool sectionHeaderBlock::updateSectionLengthExact(const char* deltaLengthExact)
 		{
-			if (isPositive)
-			{
-				*(size_t*)this->sectionLength += *(size_t*)unsignedDeltaLengthExact;
-				return true;
-			}
-			else
-			{
-				if (*(size_t*)unsignedDeltaLengthExact > *(size_t*)this->sectionLength)
-				{
-					return false;
-				}
-				else
-				{
-					*(size_t*)this->sectionLength -= *(size_t*)unsignedDeltaLengthExact;
-					return true;
-				}
-			}
+			long deltaLengthRecovered = wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered);
+			return updateSectionLength(deltaLengthRecovered);
 		}
 
-		void sectionHeaderBlock::setSectionLengthDirect(size_t exactLength)
+		void sectionHeaderBlock::setSectionLengthDirect(unsigned long exactLength)
 		{
 			delete[] this->sectionLength;
-			this->sectionLength = new char[std::strlen((char*)&exactLength)];
-			std::strncpy(this->sectionLength, (char*)&exactLength, std::strlen((char*)&exactLength));
+			this->sectionLength = wayne::numberUtil::numberToBytes(exactLength);
 		}
 
-		void sectionHeaderBlock::setSectionLengthDirectExact(const char* unsignedExactLengthExact)
+		void sectionHeaderBlock::setSectionLengthDirectExact(const char* exactLengthExact)
 		{
 			delete[] this->sectionLength;
-			this->sectionLength = new char[std::strlen(unsignedExactLengthExact)];
-			std::strncpy(this->sectionLength, unsignedExactLengthExact, std::strlen(unsignedExactLengthExact));
+			this->sectionLength = new char[structByteLength::SECTION_LENGTH_LENGTH];
+			std::copy(exactLengthExact, exactLengthExact + structByteLength::SECTION_LENGTH_LENGTH, this->sectionLength);
 		}
 
 		optionTypes* sectionHeaderBlock::getAllOptionsKeys()
@@ -517,7 +360,7 @@ namespace wayne {
 			return allKeys;
 		}
 
-		size_t sectionHeaderBlock::getAllOptionsCount()
+		int sectionHeaderBlock::getAllOptionsCount()
 		{
 			return options.size(); // @suppress("Method cannot be resolved")
 		}
@@ -552,8 +395,16 @@ namespace wayne {
 		{
 			if (isOptionExist(option))
 			{
-				std::string toReturn(this->options[option]); // @suppress("Invalid arguments")
-				return toReturn;
+				if (isDynamicLengthOption(option))
+				{
+					std::string toReturn(this->options[option]); // @suppress("Invalid arguments")
+					return toReturn;
+				}
+				else
+				{
+					//Do nothing... Because there is no static option.
+					return (std::string)"";
+				}
 			}
 			else
 			{
@@ -561,14 +412,56 @@ namespace wayne {
 			}
 		}
 
-		bool sectionHeaderBlock::setOption(optionTypes option, const char* value)
+		unsigned short sectionHeaderBlock::getOptionLength(optionTypes option)
 		{
-			if (isOptionAcceptable(option))
+			if (!isOptionExist(option))
 			{
-				delete[] options[option];
-				char* newOption = new char[std::strlen(value)];
-				std::strncpy(newOption, value, std::strlen(value));
-				this->options.insert(std::pair<optionTypes, char*>(option, newOption)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				return (unsigned short) 0;
+			}
+			else
+			{
+				if (!isDynamicLengthOption(option))
+				{
+					return (unsigned short) 0;
+					// Currently, there is no static length option.
+				}
+				else
+				{
+					return (unsigned short)std::strlen(this->options[option]); // @suppress("Invalid arguments")
+				}
+			}
+		}
+
+		bool sectionHeaderBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
+		{
+			if (isOptionAcceptable(option)) {
+				int originalOptionLength = 0;
+				if (isOptionExist(option)) {	//If Option was already given
+					if (isDynamicLengthOption(option)) {
+						originalOptionLength = wayne::numberUtil::nextNearestMultOfXFromY((int)std::strlen(this->options[option]), (int)structByteLength::BLOCK_READ_UNIT); // @suppress("Invalid arguments")
+						updateBlockLength(-originalOptionLength);				// Decrease the length
+						updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+					}
+					else
+					{
+						// Don't do anything. Because there is no static option.
+					}
+					delete[] this->options[option];
+				}
+				else
+				{
+					if (isDynamicLengthOption(option)){
+						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+						// The first 4 bytes is 2 for option title and 2 for option length.
+					}
+					else
+					{
+						// Don't do anything. Because there is no static option.
+					}
+				}
+				this->options[option] = new char[valueLength];
+				char* newOption = new char[valueLength];
+				std::copy(newOption, newOption + valueLength, this->options[option]); // @suppress("Invalid arguments")
 				return true;
 			}
 			else
@@ -579,7 +472,7 @@ namespace wayne {
 
 		bool sectionHeaderBlock::setOptionString(optionTypes option, std::string value)
 		{
-			return setOption(option, value.c_str());
+			return setOption(option, value.c_str(), value.length());
 		}
 
 		bool sectionHeaderBlock::isOptionAcceptable(optionTypes option)
@@ -595,6 +488,26 @@ namespace wayne {
 				return false;
 				break;
 			}
+		}
+
+		bool sectionHeaderBlock::isDynamicLengthOption(optionTypes option)
+		{
+			switch (option)
+			{
+			case optionTypes::SHB_HARDWARE:
+			case optionTypes::SHB_OS:
+			case optionTypes::SHB_USERAPPL:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+			}
+		}
+
+		bool sectionHeaderBlock::isStaticLengthOption(optionTypes option)
+		{
+			return false;
 		}
 
 

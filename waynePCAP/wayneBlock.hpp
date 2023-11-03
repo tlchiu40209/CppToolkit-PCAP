@@ -12,6 +12,7 @@
 #include "wayneEnums.hpp"
 #include "wayneByteSeqs.hpp"
 #include "wayneIdentBytes.hpp"
+#include "wayneNumberUtil.hpp"
 
 namespace wayne {
 	namespace PCAP {
@@ -22,8 +23,13 @@ namespace wayne {
 
 				void setBlockType(char* newBlockType);
 				void setBlockType(blockTypes type);
+				bool updateBlockLength(int deltaLength);
+				bool updateBlockLengthExact(const char* deltaLengthExact);
+				void setBlockLength(unsigned int exactLength);
+				void setBlockLengthExact(const char* exactLengthExact);
 			public:
 				block();
+				block(blockTypes type);
 				virtual ~block();
 				block(const block &other);
 				block(block &&other);
@@ -33,8 +39,11 @@ namespace wayne {
 				blockTypes getBlockType();
 				char* getBlockTypeExact();
 
-				size_t getBlockLength();
+				int getBlockLength();
 				char* getBlockLengthExact();
+				//int getBlockLengthWithPadding(); /*The reason why it should be here is due to that reading PCAP is 4 bytes each read.*/
+				//char* getBlockLengthWithPaddingExact();
+
 		};
 	} /* namespace PCAP */
 } /* namespace wayne */

@@ -42,6 +42,17 @@ namespace wayne {
 			SECTION_HEADER = 168627466, 	/*Unsigned HEX: 0A0D0D0A*/
 		};
 
+		enum structByteLength
+		{
+			BLOCK_TYPE_LENGTH = 4,
+			BLOCK_LENGTH_LENGTH = 4,
+			BLOCK_READ_UNIT = 4,
+			BYTE_ORDER_LENGTH = 4,
+			MAJOR_VERSION_LENGTH = 2,
+			MINOR_VERSION_LENGTH = 2,
+			SECTION_LENGTH_LENGTH = 8
+		};
+
 		enum optionByteLength
 		{
 			IF_IPV4ADDR_LENGTH = 8, 			/*4 Byte IP, 4 Byte Mask*/
@@ -61,10 +72,17 @@ namespace wayne {
 			EPB_QUEUE_LENGTH = 4
 		};
 
+		class endianTypesBytes {
+			static const char* ENDIAN_TYPE_SMALL_BYTES;
+			static const char* ENDIAN_TYPE_BIG_BYTES;
+			/*BIG Unsigned HEX: 1a2b3c4d*/
+			/*SMALL Unsigned HEX: 4d3c2b1a*/
+		};
+
 		enum endianTypes
 		{
-			BIG = 439041101, 					/*Unsigned HEX: 1a2b3c4d*/
-			SMALL = 1295788826, 				/* Unsigned HEX: 4d3c2b1a*/
+			ENDIAN_TYPE_SMALL = 0,
+			ENDIAN_TYPE_BIG = 1
 		};
 
 		enum optionTypes
