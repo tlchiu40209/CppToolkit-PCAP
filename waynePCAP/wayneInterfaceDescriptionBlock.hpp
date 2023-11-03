@@ -22,12 +22,12 @@ namespace wayne {
 		std::map<optionTypes, char*> options; // @suppress("Invalid template argument")
 	public:
 		interfaceDescriptionBlock();
+		interfaceDescriptionBlock(linkTypes type);
 		interfaceDescriptionBlock(char* linkTypeExact);
 		virtual ~interfaceDescriptionBlock();
 		interfaceDescriptionBlock(const interfaceDescriptionBlock &other);
 		interfaceDescriptionBlock(interfaceDescriptionBlock &&other);
-		interfaceDescriptionBlock& operator=(
-				const interfaceDescriptionBlock &other);
+		interfaceDescriptionBlock& operator=(const interfaceDescriptionBlock &other);
 		interfaceDescriptionBlock& operator=(interfaceDescriptionBlock &&other);
 	};
 

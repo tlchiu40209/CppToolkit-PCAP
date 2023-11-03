@@ -49,8 +49,8 @@ namespace wayne {
 				char* getSectionLengthExact();
 				bool updateSectionLength(long deltaLength);
 				bool updateSectionLengthExact(const char* deltaLengthExact);
-				void setSectionLengthDirect(unsigned long exactLength);
-				void setSectionLengthDirectExact(const char* exactLengthExact);
+				void setSectionLength(unsigned long exactLength);
+				void setSectionLengthExact(const char* exactLengthExact);
 
 				optionTypes* getAllOptionsKeys();
 				int getAllOptionsCount();

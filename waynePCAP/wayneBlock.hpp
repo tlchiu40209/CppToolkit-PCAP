@@ -10,8 +10,6 @@
 #include <string>
 #include <cstring>
 #include "wayneEnums.hpp"
-#include "wayneByteSeqs.hpp"
-#include "wayneIdentBytes.hpp"
 #include "wayneNumberUtil.hpp"
 
 namespace wayne {
