@@ -20,7 +20,7 @@ namespace wayne {
 		interfaceDescriptionBlock::interfaceDescriptionBlock() {
 			setBlockType(blockTypes::INTERFACE_DESCRIPTION);
 			setLinkType(linkTypes::LINKTYPE_ETHERNET);
-			this->reserved = wayne::numberUtil::numberToBytes(short(0));
+			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
 			setSnapLength((unsigned int)262144);
 
 			updateBlockLength(structByteLength::IDB_LINK_TYPE_LENGTH + structByteLength::IDB_RESERVED_LENGTH);
@@ -618,6 +618,24 @@ namespace wayne {
 				{
 
 				}
+				else
+				{
+					if (isDynamicLengthOption(option))
+					{
+						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+					}
+					else
+					{
+						if(isStaticLengthOptionAllowsMultiple(option))
+						{
+
+						}
+						else
+						{
+
+						}
+					}
+				}
 			}
 			else
 			{
@@ -629,14 +647,14 @@ namespace wayne {
 
 		bool isOptionCurrentlyMultiple(optionTypes option)
 		{
-			if (this->multCounts.empty()) // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
+			if (multCounts.empty()) // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
 			{
 				return false;
 			}
 			else
 			{
-				optionTypes* allKeys = new optionTypes[this->multCounts.size()]; // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
-				for (auto const& [key, value] : this->multCounts) // @suppress("Symbol is not resolved") // @suppress("Field cannot be resolved")
+				optionTypes* allKeys = new optionTypes[multCounts.size()]; // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
+				for (auto const& [key, value] : multCounts) // @suppress("Symbol is not resolved") // @suppress("Field cannot be resolved")
 				{
 					if (key == option)
 					{
@@ -655,7 +673,7 @@ namespace wayne {
 			}
 			else
 			{
-				return this->multCounts[option]; // @suppress("Field cannot be resolved")
+				return multCounts[option]; // @suppress("Field cannot be resolved")
 			}
 		}
 

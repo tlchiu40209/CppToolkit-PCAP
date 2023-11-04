@@ -1,5 +1,4 @@
 /*
- * wayneSectionHeaderBlock.hpp
  *
  *  Created on: 2023年10月10日
  *      Author: weich
