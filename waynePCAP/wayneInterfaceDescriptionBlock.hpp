@@ -43,7 +43,7 @@ namespace wayne {
 		optionTypes* getAllOptionKeys();
 		unsigned int getAllOptionsCount();
 		bool setOption(optionTypes option, const char* value, unsigned int valueLength);
-		bool isOptionExsit(optionTypes option);
+		bool isOptionExist(optionTypes option);
 		bool isOptionAcceptable(optionTypes option);
 		bool isOptionCurrentlyMultiple(optionTypes option);
 		unsigned int getCurrentMultipleOptionsMult(optionTypes option);

@@ -597,7 +597,7 @@ namespace wayne {
 			}
 		}
 
-		bool interfaceDescriptionBlock::isOptionExsit(optionTypes option)
+		bool interfaceDescriptionBlock::isOptionExist(optionTypes option)
 		{
 			for (auto const& [key, value] : this->options) // @suppress("Symbol is not resolved")
 			{
@@ -609,14 +609,76 @@ namespace wayne {
 			return false;
 		}
 
-		bool setOption(optionTypes option, const char* value, unsigned int valueLength)
+		bool interfaceDescriptionBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
 			if (isOptionAcceptable(option))
 			{
-				int originalOptionLength = 0;
+				/* Handling the length request. */	
 				if (isOptionExist(option))
 				{
-
+					int originalOptionLength = 0;
+					if (isDynamicLengthOption(option))
+					{
+						int recoveredLength = std::strlen(this->options[option]);
+						updateBlockLength(-recoveredLength);
+						updateBlockLength(valueLength);
+					}
+					else
+					{
+						if (isStaticLengthOptionAllowsMultiple(option))
+						{
+							switch (option)
+							{
+								case optionTypes::IF_IPV4ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV4ADDR_LENGTH != 0)
+								{
+									return false;
+								}
+								if (isOptionCurrentlyMultiple(option))
+								{
+									int recoveredLength = (int)optionByteLength::IF_IPV4ADDR_LENGTH * (int)this->multCounts[option];
+									this->multCounts.erase(option);
+									updateBlockLength(-recoveredLength);
+								}
+								else
+								{
+									updateBlockLength(-((int)optionByteLength::IF_IPV4ADDR_LENGTH));
+								}
+								int multIpv4 = valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH;
+								if (multIpv4 > 1)
+								{
+									this->multCounts[option] = multIpv4;
+								}
+								updateBlockLength(valueLength);
+								break;
+								case optionTypes::IF_IPV6ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV6ADDR_LENGTH != 0)
+								{
+									return false;
+								}
+								if (isOptionCurrentlyMultiple(option))
+								{
+									int recoveredLength = wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_IPV6ADDR_LENGTH * (int)this->multCounts[option], (int)structByteLength::BLOCK_READ_UNIT);
+									this->multCounts.erase(option);
+									updateBlockLength(-recoveredLength);
+								}
+								else
+								{
+									updateBlockLength(-(wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_IPV4ADDR_LENGTH, (int)structByteLength::BLOCK_READ_UNIT)));
+								}
+								int multIpv6 = valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH;
+								if (multIpv6 > 1)
+								{
+									this->multCounts[option] = multIpv6;
+								}
+								updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+								break;
+								default:
+								return false;
+								break;
+							}
+						}
+					}
 				}
 				else
 				{
@@ -628,14 +690,86 @@ namespace wayne {
 					{
 						if(isStaticLengthOptionAllowsMultiple(option))
 						{
-
+							switch (option)
+							{
+								case optionTypes::IF_IPV4ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV4ADDR_LENGTH == 0)
+								{
+									int multIpv4 = valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH;
+									if (multIpv4 > 1)
+									{
+										this->multCounts[optionTypes::IF_IPV4ADDR] = multIpv4;
+									}
+									updateBlockLength((int)4 + valueLength);
+								}
+								else
+								{
+									return false;
+								}
+								break;
+								case optionTypes::IF_IPV6ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV6ADDR_LENGTH == 0)
+								{
+									int multIpv6 = valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH;
+									if (multIpv6 > 1)
+									{
+										this->multCounts[optionTypes::IF_IPV6ADDR] = multIpv6;
+									}
+									updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+								}
+								else
+								{
+									return false;
+								}
+								break;
+								default:
+								return false;
+								break;
+							}
 						}
 						else
 						{
-
+							switch (option)
+							{
+							case optionTypes::IF_MACADDR:
+								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_MACADDR_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
+								// Note: Because MAC Address is only 6 bytes, so it needs to be padded.
+								break;
+							case optionTypes::IF_EUIADDR:
+								updateBlockLength((int)4 + optionByteLength::IF_EUIADDR_LENGTH);
+								break;
+							case optionTypes::IF_SPEED:
+								updateBlockLength((int)4 + optionByteLength::IF_SPEED_LENGTH);
+								break;
+							case optionTypes::IF_TSRESOL:
+								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_TSRESOL_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
+								// Note: Because TSRESOL is only 1 byte, so it needs to be padded.
+								break;
+							case optionTypes::IF_TZONE:
+								updateBlockLength((int)4 + optionByteLength::IF_TZONE_LENGTH);
+								break;
+							case optionTypes::IF_FCSLEN:
+								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_FCSLEN_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
+								break;
+							case optionTypes::IF_TSOFFSET:
+								updateBlockLength((int)4 + optionByteLength::IF_TSOFFSET_LENGTH);
+								break;
+							case optionTypes::IF_TXSPEED:
+								updateBlockLength((int)4 + optionByteLength::IF_TXSPEED_LENGTH);
+								break;
+							case optionTypes::IF_RXSPEED:
+								updateBlockLength((int)4 + optionByteLength::IF_RXSPEED_LENGTH);
+								break;
+							default:
+								return false;
+								break;
+							}
 						}
 					}
 				}
+				/* End of Handling Length */
+				/* 4 Nov, here. Wayne. Handling data copying.*/
+
 			}
 			else
 			{
@@ -645,16 +779,16 @@ namespace wayne {
 
 		}
 
-		bool isOptionCurrentlyMultiple(optionTypes option)
+		bool interfaceDescriptionBlock::isOptionCurrentlyMultiple(optionTypes option)
 		{
-			if (multCounts.empty()) // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
+			if (this->multCounts.empty()) // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
 			{
 				return false;
 			}
 			else
 			{
 				optionTypes* allKeys = new optionTypes[multCounts.size()]; // @suppress("Field cannot be resolved") // @suppress("Method cannot be resolved")
-				for (auto const& [key, value] : multCounts) // @suppress("Symbol is not resolved") // @suppress("Field cannot be resolved")
+				for (auto const& [key, value] : this->multCounts) // @suppress("Symbol is not resolved") // @suppress("Field cannot be resolved")
 				{
 					if (key == option)
 					{
@@ -665,7 +799,7 @@ namespace wayne {
 			}
 		}
 
-		unsigned int getCurrentMultipleOptionsMult(optionTypes option)
+		unsigned int interfaceDescriptionBlock::getCurrentMultipleOptionsMult(optionTypes option)
 		{
 			if (isOptionCurrentlyMultiple(option))
 			{
@@ -673,7 +807,7 @@ namespace wayne {
 			}
 			else
 			{
-				return multCounts[option]; // @suppress("Field cannot be resolved")
+				return this->multCounts[option]; // @suppress("Field cannot be resolved")
 			}
 		}
 
