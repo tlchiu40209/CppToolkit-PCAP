@@ -8,7 +8,7 @@
 
 namespace wayne {
 	namespace PCAP {
-		static const char* endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES = "\x4d\x3c\x2b\x1a";
-		static const char* endianTypesBytes::ENDIAN_TYPE_BIG_BYTES = "\x1a\x2b\x3c\x4d";
+		const char* endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES = "\x4d\x3c\x2b\x1a";
+		const char* endianTypesBytes::ENDIAN_TYPE_BIG_BYTES = "\x1a\x2b\x3c\x4d";
 	}
 } /* namespace wayne */

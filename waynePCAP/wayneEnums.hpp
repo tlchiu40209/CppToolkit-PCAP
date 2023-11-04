@@ -79,8 +79,9 @@ namespace wayne {
 		};
 
 		class endianTypesBytes {
-			static const char* ENDIAN_TYPE_SMALL_BYTES;
-			static const char* ENDIAN_TYPE_BIG_BYTES;
+			public:
+				static const char* ENDIAN_TYPE_SMALL_BYTES;
+				static const char* ENDIAN_TYPE_BIG_BYTES;
 			/*BIG Unsigned HEX: 1a2b3c4d*/
 			/*SMALL Unsigned HEX: 4d3c2b1a*/
 		};

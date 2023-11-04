@@ -27,12 +27,13 @@ namespace wayne {
 		};
 
 		class numberTypeReference {
-			static const short DATA_TYPE_SHORT = 0;
-			static const unsigned short DATA_TYPE_UNSIGNED_SHORT = 0;
-			static const int DATA_TYPE_INTEGER = 0;
-			static const unsigned int DATA_TYPE_UNSIGNED_INTEGER = 0;
-			static const long DATA_TYPE_LONG = 0;
-			static const unsigned long DATA_TYPE_UNSIGNED_LONG = 0;
+			public:
+				static const short DATA_TYPE_SHORT = 0;
+				static const unsigned short DATA_TYPE_UNSIGNED_SHORT = 0;
+				static const int DATA_TYPE_INTEGER = 0;
+				static const unsigned int DATA_TYPE_UNSIGNED_INTEGER = 0;
+				static const long DATA_TYPE_LONG = 0;
+				static const unsigned long DATA_TYPE_UNSIGNED_LONG = 0;
 		};
 
 		template<typename integerType> std::vector<char> numberToBytes(integerType const& number, numberByteOrder numByteOrder = ORDER_DATA_DEFAULT);
