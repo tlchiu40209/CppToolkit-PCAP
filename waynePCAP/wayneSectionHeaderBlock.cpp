@@ -96,7 +96,7 @@ namespace wayne {
 			setSectionLengthExact(other.sectionLength);
 			for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
 			{
-				if (isDynamicLengthOption(key))
+				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
 				{
 					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
 					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
@@ -319,11 +319,11 @@ namespace wayne {
 			unsigned long currentSectionLength = wayne::numberUtil::bytesStaticToNumber(this->sectionLength, currentSectionLength);
 			delete[] this->sectionLength;
 			if (currentSectionLength + deltaLength < 0) {
-				this->sectionLength = wayne::numberUtil::numberToBytes((unsigned long)0);
+				this->sectionLength = wayne::numberUtil::numberToBytesStatic((unsigned long)0);
 				return false;
 			} else {
 				currentSectionLength += deltaLength;
-				this->sectionLength = wayne::numberUtil::numberToBytes(currentSectionLength);
+				this->sectionLength = wayne::numberUtil::numberToBytesStatic(currentSectionLength);
 				return true;
 			}
 		}
@@ -337,7 +337,7 @@ namespace wayne {
 		void sectionHeaderBlock::setSectionLength(unsigned long exactLength)
 		{
 			delete[] this->sectionLength;
-			this->sectionLength = wayne::numberUtil::numberToBytes(exactLength);
+			this->sectionLength = wayne::numberUtil::numberToBytesStatic(exactLength);
 		}
 
 		void sectionHeaderBlock::setSectionLengthExact(const char* exactLengthExact)
