@@ -276,28 +276,67 @@ namespace wayne {
 
 		char* EnhancedPacketBlock::getOption(optionTypes option)
 		{
-
+			char* toReturn;
+			if (isDynamicLengthOption(option))
+			{
+				toReturn = new char[std::strlen(this->options[option])];
+				std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
+				return toReturn;
+			}
+			else
+			{
+				switch(option)
+				{
+					case optionTypes::EPB_FLAGS:
+					toReturn = new char[optionByteLength::EPB_FLAGS_LENGTH];
+					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_FLAGS_LENGTH, toReturn);
+					return toReturn;
+					break;
+					case optionTypes::EPB_DROPCOUNT:
+					toReturn = new char[optionByteLength::EPB_DROPCOUNT_LENGTH];
+					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_DROPCOUNT_LENGTH, toReturn);
+					return toReturn;
+					break;
+					case optionTypes::EPB_PACKETID:
+					toReturn = new char[optionByteLength::EPB_PACKETID_LENGTH];
+					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_PACKETID_LENGTH, toReturn);
+					return toReturn;
+					break;
+					case optionTypes::EPB_QUEUE:
+					toReturn = new char[optionByteLength::EPB_QUEUE_LENGTH];
+					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_QUEUE_LENGTH, toReturn);
+					return toReturn;
+					break;
+					default:
+					return toReturn;
+					break;
+				}
+			}
 		}
 
 		bool EnhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
+			if (isOptionAcceptable(option))
+			{
 
-		}
 
-		bool EnhancedPacketBlock::isOptionCurrentlyMultiple(optionTypes option)
-		{
-
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		bool EnhancedPacketBlock::isOptionExist(optionTypes option)
 		{
-
-		}
-
-
-		unsigned int EnhancedPacketBlock::getCurrentMultipleOptionsMult(optionTypes option)
-		{
-
+			for (auto const& [key, value] : this->options)
+			{
+				if (key == option)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		bool EnhancedPacketBlock::isOptionAcceptable(optionTypes option)
@@ -320,17 +359,32 @@ namespace wayne {
 
 		bool EnhancedPacketBlock::isDynamicLengthOption(optionTypes option)
 		{
-
+			switch (option)
+			{
+				case optionTypes::EPB_HASH:
+				case optionTypes::EPB_VERDICT:
+					return true;
+					break;
+				default:
+					return false;
+					break;
+			}
 		}
 
 		bool EnhancedPacketBlock::isStaticLengthOption(optionTypes option)
 		{
-			
-		}
-
-		bool EnhancedPacketBlock::isStaticLengthOptionAllowsMultiple(optionTypes option)
-		{
-
+			switch (option)
+			{
+				case optionTypes::EPB_DROPCOUNT:
+				case optionTypes::EPB_FLAGS:
+				case optionTypes::EPB_PACKETID:
+				case optionTypes::EPB_QUEUE:
+					return true;
+					break;
+				default:
+					return false;
+					break;
+			}
 		}
 
 	} /* namespace PCAP */
