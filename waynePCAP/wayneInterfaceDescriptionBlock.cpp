@@ -732,32 +732,68 @@ namespace wayne {
 							switch (option)
 							{
 							case optionTypes::IF_MACADDR:
+								if (valueLength != optionByteLength::IF_MACADDR_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_MACADDR_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
 								// Note: Because MAC Address is only 6 bytes, so it needs to be padded.
 								break;
 							case optionTypes::IF_EUIADDR:
+								if (valueLength != optionByteLength::IF_EUIADDR_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_EUIADDR_LENGTH);
 								break;
 							case optionTypes::IF_SPEED:
+								if (valueLength != optionByteLength::IF_SPEED_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_SPEED_LENGTH);
 								break;
 							case optionTypes::IF_TSRESOL:
+								if (valueLength != optionByteLength::IF_TSRESOL_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_TSRESOL_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
 								// Note: Because TSRESOL is only 1 byte, so it needs to be padded.
 								break;
 							case optionTypes::IF_TZONE:
+								if (valueLength != optionByteLength::IF_TZONE_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_TZONE_LENGTH);
 								break;
 							case optionTypes::IF_FCSLEN:
+								if (valueLength != optionByteLength::IF_FCSLEN_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_FCSLEN_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
 								break;
 							case optionTypes::IF_TSOFFSET:
+								if (valueLength != optionByteLength::IF_TSOFFSET_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_TSOFFSET_LENGTH);
 								break;
 							case optionTypes::IF_TXSPEED:
+								if (valueLength != optionByteLength::IF_TXSPEED_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_TXSPEED_LENGTH);
 								break;
 							case optionTypes::IF_RXSPEED:
+								if (valueLength != optionByteLength::IF_RXSPEED_LENGTH)
+								{
+									return false;
+								}
 								updateBlockLength((int)4 + optionByteLength::IF_RXSPEED_LENGTH);
 								break;
 							default:
@@ -769,7 +805,16 @@ namespace wayne {
 				}
 				/* End of Handling Length */
 				/* 4 Nov, here. Wayne. Handling data copying.*/
-
+				
+				/* Check if this option exist*/
+				if (isOptionExist(option))
+				{
+					delete[] this->options[option];
+				}
+				char* newOption = new char[valueLength];
+				std::copy(value, value + valueLength, newOption);
+				this->options[option] = newOption;
+				return true;
 			}
 			else
 			{
