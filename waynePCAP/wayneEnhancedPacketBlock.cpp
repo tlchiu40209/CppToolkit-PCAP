@@ -257,5 +257,81 @@ namespace wayne {
 			this->originalPacketLength = wayne::numberUtil::numberToBytesStatic(newOriginalPacketLength);
 		}
 
+		optionTypes* EnhancedPacketBlock::getAllOptionKeys()
+		{
+			optionTypes* allKeys = new optionTypes[this->options.size()];
+			int counter = 0;
+			for (auto const& [key, option] : this->options)
+			{
+				allKeys[counter] = key;
+				counter++;
+			}
+			return allKeys;
+		}
+		
+		unsigned int EnhancedPacketBlock::getAllOptionCount()
+		{
+			return (unsigned int)this->options.size();
+		}
+
+		char* EnhancedPacketBlock::getOption(optionTypes option)
+		{
+
+		}
+
+		bool EnhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
+		{
+
+		}
+
+		bool EnhancedPacketBlock::isOptionCurrentlyMultiple(optionTypes option)
+		{
+
+		}
+
+		bool EnhancedPacketBlock::isOptionExist(optionTypes option)
+		{
+
+		}
+
+
+		unsigned int EnhancedPacketBlock::getCurrentMultipleOptionsMult(optionTypes option)
+		{
+
+		}
+
+		bool EnhancedPacketBlock::isOptionAcceptable(optionTypes option)
+		{
+			switch (option)
+			{
+				case optionTypes::EPB_DROPCOUNT:
+				case optionTypes::EPB_FLAGS:
+				case optionTypes::EPB_HASH:
+				case optionTypes::EPB_PACKETID:
+				case optionTypes::EPB_QUEUE:
+				case optionTypes::EPB_VERDICT:
+					return true;
+					break;
+				default:
+					return false;
+					break;
+			}
+		}
+
+		bool EnhancedPacketBlock::isDynamicLengthOption(optionTypes option)
+		{
+
+		}
+
+		bool EnhancedPacketBlock::isStaticLengthOption(optionTypes option)
+		{
+			
+		}
+
+		bool EnhancedPacketBlock::isStaticLengthOptionAllowsMultiple(optionTypes option)
+		{
+
+		}
+
 	} /* namespace PCAP */
 } /* namespace wayne */
