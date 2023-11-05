@@ -34,6 +34,8 @@ namespace wayne {
 				static const unsigned int DATA_TYPE_UNSIGNED_INTEGER = 0;
 				static const long DATA_TYPE_LONG = 0;
 				static const unsigned long DATA_TYPE_UNSIGNED_LONG = 0;
+				static const long long DATA_TYPE_LONG_LONG = 0;
+				static const unsigned long long DATA_TYPE_UNSIGNED_LONG_LONG = 0;
 		};
 
 		template<typename integerType> std::vector<char> numberToBytes(integerType const& number, numberByteOrder numByteOrder = ORDER_DATA_DEFAULT);

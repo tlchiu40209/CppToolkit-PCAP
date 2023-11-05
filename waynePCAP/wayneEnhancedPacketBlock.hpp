@@ -34,7 +34,7 @@ public:
 	unsigned int getInterfaceId();
 	char* getInterfaceIdExact();
 	void setInterfaceId(unsigned int newInterfaceId);
-	void setInterfaceIdExact(char* newInterfaceId);
+	void setInterfaceIdExact(char* newInterfaceIdExact);
 
 	unsigned long long getTimestamp();
 	char* getTimestampExact();
@@ -57,11 +57,10 @@ public:
 	unsigned int getOriginalPacketLength();
 	char* getOriginalPacketLengthExact();
 	void setOriginalPacketLength(unsigned int newOriginalPacketLength);
-	void setOriginalPacketLengthExact(unsigned int newOriginalPacketLengthExact);
+	void setOriginalPacketLengthExact(char* newOriginalPacketLengthExact);
 
 	char* getPacketData();
-	void setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength);
-	void setPacketData(const char* newPacketData, unsigned int newCapturedPAcketLength, unsigned int newOriginalPacketLength);
+	void setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength, unsigned int newOriginalPacketLength);
 
 	optionTypes* getAllOptionKeys();
 	unsigned int getAllOptionCount();
