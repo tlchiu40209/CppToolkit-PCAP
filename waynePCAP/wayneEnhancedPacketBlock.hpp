@@ -24,7 +24,7 @@ protected:
 	std::map<optionTypes, char*> options;
 public:
 	EnhancedPacketBlock();
-	EnhancedPacketBlock(unsigned int initInterfaceId, unsigned int initTimestampUpper, unsigned int initTimestampLower, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData);
+	EnhancedPacketBlock(unsigned int initInterfaceId, unsigned long long timestamp, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData);
 	virtual ~EnhancedPacketBlock();
 	EnhancedPacketBlock(const EnhancedPacketBlock &other);
 	EnhancedPacketBlock(EnhancedPacketBlock &&other);
@@ -43,9 +43,9 @@ public:
 	unsigned int getTimestampLower();
 	char* getTimestampLowerExact();
 	void setTimestamp(unsigned long long newTimestamp);
-	void setTimestampExact(char* newTimestampExact);
+	void setTimestampExact(const char* newTimestampExact);
 	void setTimestampUpper(unsigned int newTimestampUpper);
-	void setTimestampUpperExact(char* newTimestampUpperExact);
+	void setTimestampUpperExact(const char* newTimestampUpperExact);
 	void setTimestampLower(unsigned int newTimestampLower);
 	void setTimestampLowerExact(char* newTimestampLowerExact);
 
@@ -58,6 +58,22 @@ public:
 	char* getOriginalPacketLengthExact();
 	void setOriginalPacketLength(unsigned int newOriginalPacketLength);
 	void setOriginalPacketLengthExact(unsigned int newOriginalPacketLengthExact);
+
+	char* getPacketData();
+	void setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength);
+	void setPacketData(const char* newPacketData, unsigned int newCapturedPAcketLength, unsigned int newOriginalPacketLength);
+
+	optionTypes* getAllOptionKeys();
+	unsigned int getAllOptionCount();
+	char* getOption(optionTypes option);
+	bool setOption(optionTypes option, const char* value, unsigned int valueLength);
+	bool isOptionExist(optionTypes option);
+	bool isOptionAcceptable(optionTypes option);
+	unsigned int getCurrentMultipleOptionsMult(optionTypes option);
+	bool isOptionAcceptable(optionTypes option);
+	bool isDynamicLengthOption(optionTypes option);
+	bool isStaticLengthOption(optionTypes option);
+	bool isStaticLengthOptionAllowsMultiple(optionTypes option);
 };
 
 } /* namespace PCAP */

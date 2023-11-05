@@ -609,6 +609,18 @@ namespace wayne {
 			return false;
 		}
 
+		char* interfaceDescriptionBlock::getOption(optionTypes option)
+		{
+			char* toReturn;
+			if (isDynamicLengthOption(option))
+			{
+				toReturn = new char[std::strlen(this->options[option])];
+				std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
+				return toReturn;
+			}
+			// 5 Nov, 2023 Here.
+		}
+
 		bool interfaceDescriptionBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
 			if (isOptionAcceptable(option))
