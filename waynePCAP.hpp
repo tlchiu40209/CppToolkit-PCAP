@@ -11,6 +11,9 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include "wayneSectionHeaderBlock.hpp"
+#include "wayneInterfaceDescriptionBlock.hpp"
+#include "wayneEnhancedPacketBlock.hpp"
 
 namespace wayne
 {
@@ -18,16 +21,18 @@ namespace wayne
 	{
 		class PCAPNG
 		{
+			protected:
+				sectionHeaderBlock sectionHeader;
+				interfaceDescriptionBlock interfaceDescription;
+				std::map<unsigned long long, enhancedPacketBlock> packets; // unsigned long long = timestamp, enhancedPacketBlock = packet
 			public:
 				PCAPNG();
 				PCAPNG(const PCAPNG &other);
 				PCAPNG(PCAPNG &&other);
 				virtual ~PCAPNG();
 				PCAPNG& operator=(const PCAPNG &other);
-				PCAPNG& operator=(PCAPNG &other);
-				PCAPNG& operator==(const PCAPNG &other);
-				PCAPNG& operator==(PCAPNG &other);
-			private:
+				PCAPNG& operator=(PCAPNG &&other);
+				bool operator==(const PCAPNG &other);
 
 		};
 

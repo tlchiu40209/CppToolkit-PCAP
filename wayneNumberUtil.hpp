@@ -8,7 +8,7 @@
 #ifndef LIB_WAYNENUMBERUTIL_HPP_
 #define LIB_WAYNENUMBERUTIL_HPP_
 #include <vector>
-#include "wayneIO.hpp";
+#include "wayneIO.hpp"
 
 namespace wayne {
 

@@ -120,6 +120,7 @@ namespace wayne {
 							optionLength = optionByteLength::IF_RXSPEED_LENGTH;
 							break;
 						default:
+							break;
 							//Don't do anything.
 						}
 					}
@@ -226,6 +227,7 @@ namespace wayne {
 								optionLength = optionByteLength::IF_RXSPEED_LENGTH;
 								break;
 							default:
+								break;
 								//Don't do anything.
 							}
 						}
@@ -450,6 +452,7 @@ namespace wayne {
 							toReturnLength = optionByteLength::IF_RXSPEED_LENGTH;
 							break;
 						default:
+							break;
 							//Don't do anything.
 						}
 					}
@@ -531,6 +534,7 @@ namespace wayne {
 								originalOptionLength = optionByteLength::IF_RXSPEED_LENGTH;
 								break;
 							default:
+								break;
 								//Don't do anything.
 						}
 					}
@@ -634,6 +638,7 @@ namespace wayne {
 							}
 							break;
 						default:
+							break;
 							//Don't do anything.
 					}
 

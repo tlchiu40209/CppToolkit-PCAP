@@ -10,7 +10,7 @@
 namespace wayne {
 	namespace PCAP {
 
-		EnhancedPacketBlock::EnhancedPacketBlock() 
+		enhancedPacketBlock::enhancedPacketBlock() 
 		{
 			setBlockType(blockTypes::ENHANCED_PACKET);
 			setInterfaceId((unsigned int)0);
@@ -23,7 +23,7 @@ namespace wayne {
 			updateBlockLength(structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH);
 		}
 
-		EnhancedPacketBlock::EnhancedPacketBlock(unsigned int initInterfaceId, unsigned long long initTimestamp, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData) 
+		enhancedPacketBlock::enhancedPacketBlock(unsigned int initInterfaceId, unsigned long long initTimestamp, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData) 
 		{
 			setBlockType(blockTypes::ENHANCED_PACKET);
 			setInterfaceId(initInterfaceId);
@@ -37,7 +37,7 @@ namespace wayne {
 			updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY(initCapturedPacketLength, (unsigned int)structByteLength::BLOCK_READ_UNIT));
 		}
 
-		EnhancedPacketBlock::~EnhancedPacketBlock() 
+		enhancedPacketBlock::~enhancedPacketBlock() 
 		{
 			delete[] this->interfaceId;
 			delete[] this->timestampLower;
@@ -52,7 +52,7 @@ namespace wayne {
 			this->options.clear();
 		}
 
-		EnhancedPacketBlock::EnhancedPacketBlock(const EnhancedPacketBlock &other) 
+		enhancedPacketBlock::enhancedPacketBlock(const enhancedPacketBlock &other) 
 		{
 			setInterfaceIdExact(other.interfaceId);
 			setTimestampUpperExact(other.timestampUpper);
@@ -88,7 +88,7 @@ namespace wayne {
 			}
 		}
 
-		EnhancedPacketBlock::EnhancedPacketBlock(EnhancedPacketBlock &&other) 
+		enhancedPacketBlock::enhancedPacketBlock(enhancedPacketBlock &&other) 
 		{
 			this->interfaceId = other.interfaceId;
 			this->timestampLower = other.timestampLower;
@@ -111,7 +111,7 @@ namespace wayne {
 			}
 		}
 
-		EnhancedPacketBlock& EnhancedPacketBlock::operator=(const EnhancedPacketBlock &other) {
+		enhancedPacketBlock& enhancedPacketBlock::operator=(const enhancedPacketBlock &other) {
 			if (this != &other)
 			{
 				setInterfaceIdExact(other.interfaceId);
@@ -150,7 +150,7 @@ namespace wayne {
 			return *this;
 		}
 
-		EnhancedPacketBlock& EnhancedPacketBlock::operator=(EnhancedPacketBlock &&other) {
+		enhancedPacketBlock& enhancedPacketBlock::operator=(enhancedPacketBlock &&other) {
 			if (this != &other)
 			{
 				this->interfaceId = other.interfaceId;
@@ -176,7 +176,7 @@ namespace wayne {
 			return *this;
 		}
 
-		bool EnhancedPacketBlock::operator==(const EnhancedPacketBlock &other)
+		bool enhancedPacketBlock::operator==(const enhancedPacketBlock &other)
 		{
 			if (wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
 			{
@@ -212,32 +212,32 @@ namespace wayne {
 			return true;
 		}
 
-		unsigned int EnhancedPacketBlock::getInterfaceId()
+		unsigned int enhancedPacketBlock::getInterfaceId()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
 		}
 
-		char* EnhancedPacketBlock::getInterfaceIdExact()
+		char* enhancedPacketBlock::getInterfaceIdExact()
 		{
 			char* toReturn = new char[structByteLength::EPB_INTERFACE_ID_LENGTH];
 			std::copy(this->interfaceId, this->interfaceId + structByteLength::EPB_INTERFACE_ID_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void EnhancedPacketBlock::setInterfaceId(unsigned int newInterfaceId)
+		void enhancedPacketBlock::setInterfaceId(unsigned int newInterfaceId)
 		{
 			delete[] this->interfaceId;
 			this->interfaceId = wayne::numberUtil::numberToBytesStatic(newInterfaceId);
 		}
 
-		void EnhancedPacketBlock::setInterfaceIdExact(char* newInterfaceIdExact)
+		void enhancedPacketBlock::setInterfaceIdExact(char* newInterfaceIdExact)
 		{
 			delete[] this->interfaceId;
 			this->interfaceId = new char[structByteLength::EPB_INTERFACE_ID_LENGTH];
 			std::copy(newInterfaceIdExact, newInterfaceIdExact + structByteLength::EPB_INTERFACE_ID_LENGTH, this->interfaceId);
 		}
 
-		unsigned long long EnhancedPacketBlock::getTimestamp()
+		unsigned long long enhancedPacketBlock::getTimestamp()
 		{
 			char* fullTimeStamp = getTimestampExact();
 			unsigned long long toReturn = wayne::numberUtil::bytesStaticToNumber(fullTimeStamp, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_LONG_LONG);
@@ -245,7 +245,7 @@ namespace wayne {
 			return toReturn;
 		}
 
-		char* EnhancedPacketBlock::getTimestampExact()
+		char* enhancedPacketBlock::getTimestampExact()
 		{
 			char* fullTimeStamp = new char[structByteLength::EPB_TIMESTAMP_FULL_LENGTH];
 			std::copy(this->timestampUpper, this->timestampUpper + structByteLength::EPB_TIMESTAMP_UPPER_LENGTH, fullTimeStamp);
@@ -253,31 +253,31 @@ namespace wayne {
 			return fullTimeStamp;
 		}
 
-		unsigned int EnhancedPacketBlock::getTimestampUpper()
+		unsigned int enhancedPacketBlock::getTimestampUpper()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
 		}
 
-		char* EnhancedPacketBlock::getTimestampUpperExact()
+		char* enhancedPacketBlock::getTimestampUpperExact()
 		{
 			char* toReturn = new char[structByteLength::EPB_TIMESTAMP_UPPER_LENGTH];
 			std::copy(this->timestampUpper, this->timestampUpper + structByteLength::EPB_TIMESTAMP_UPPER_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		unsigned int EnhancedPacketBlock::getTimestampLower()
+		unsigned int enhancedPacketBlock::getTimestampLower()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
 		}
 
-		char* EnhancedPacketBlock::getTimestampLowerExact()
+		char* enhancedPacketBlock::getTimestampLowerExact()
 		{
 			char* toReturn = new char[structByteLength::EPB_TIMESTAMP_LOWER_LENGTH];
 			std::copy(this->timestampLower, this->timestampLower + structByteLength::EPB_TIMESTAMP_LOWER_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void EnhancedPacketBlock::setTimestamp(unsigned long long newTimestamp)
+		void enhancedPacketBlock::setTimestamp(unsigned long long newTimestamp)
 		{
 			delete[] this->timestampLower;
 			delete[] this->timestampUpper;
@@ -289,7 +289,7 @@ namespace wayne {
 			delete[] newTimestampExact;
 		}
 
-		void EnhancedPacketBlock::setTimestampExact(const char* newTimestampExact)
+		void enhancedPacketBlock::setTimestampExact(const char* newTimestampExact)
 		{
 			delete[] this->timestampLower;
 			delete[] this->timestampUpper;
@@ -299,88 +299,88 @@ namespace wayne {
 			std::copy(newTimestampExact + structByteLength::EPB_TIMESTAMP_LOWER_LENGTH, newTimestampExact + structByteLength::EPB_TIMESTAMP_FULL_LENGTH, this->timestampLower);	
 		}
 
-		void EnhancedPacketBlock::setTimestampUpper(unsigned int newTimestampUpper)
+		void enhancedPacketBlock::setTimestampUpper(unsigned int newTimestampUpper)
 		{
 			delete[] this->timestampUpper;
 			this->timestampUpper = wayne::numberUtil::numberToBytesStatic(newTimestampUpper);
 		}
 
-		void EnhancedPacketBlock::setTimestampUpperExact(const char* newTimestampUpperExact)
+		void enhancedPacketBlock::setTimestampUpperExact(const char* newTimestampUpperExact)
 		{
 			delete[] this->timestampUpper;
 			std::copy(newTimestampUpperExact, newTimestampUpperExact + structByteLength::EPB_TIMESTAMP_UPPER_LENGTH, this->timestampUpper);
 		}
 
-		void EnhancedPacketBlock::setTimestampLower(unsigned int newTimestampLower)
+		void enhancedPacketBlock::setTimestampLower(unsigned int newTimestampLower)
 		{
 			delete[] this->timestampLower;
 			this->timestampLower = wayne::numberUtil::numberToBytesStatic(newTimestampLower);
 		}
 
-		void EnhancedPacketBlock::setTimestampLowerExact(char* newTimestampLowerExact)
+		void enhancedPacketBlock::setTimestampLowerExact(char* newTimestampLowerExact)
 		{
 			delete[] this->timestampLower;
 			std::copy(newTimestampLowerExact, newTimestampLowerExact + structByteLength::EPB_TIMESTAMP_LOWER_LENGTH, this->timestampLower);
 		}
 
-		unsigned int EnhancedPacketBlock::getCapturedPacketLength()
+		unsigned int enhancedPacketBlock::getCapturedPacketLength()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
 		}
 
-		char* EnhancedPacketBlock::getCapturedPacketLengthExact()
+		char* enhancedPacketBlock::getCapturedPacketLengthExact()
 		{
 			char* toReturn = new char[structByteLength::EPB_CAPTURED_PACKET_LENGTH_LENGTH];
 			std::copy(this->capturedPacketLength, this->capturedPacketLength + structByteLength::EPB_CAPTURED_PACKET_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void EnhancedPacketBlock::setCapturedPacketLength(unsigned int newCapturedPacketLength)
+		void enhancedPacketBlock::setCapturedPacketLength(unsigned int newCapturedPacketLength)
 		{
 			delete[] this->capturedPacketLength;
 			this->capturedPacketLength = wayne::numberUtil::numberToBytesStatic(newCapturedPacketLength);
 		}
 
-		void EnhancedPacketBlock::setCapturedPacketLengthExact(char* newCapturedPacketLengthExact)
+		void enhancedPacketBlock::setCapturedPacketLengthExact(char* newCapturedPacketLengthExact)
 		{
 			delete[] this->capturedPacketLength;
 			this->capturedPacketLength = new char[structByteLength::EPB_CAPTURED_PACKET_LENGTH_LENGTH];
 			std::copy(newCapturedPacketLengthExact, newCapturedPacketLengthExact + structByteLength::EPB_CAPTURED_PACKET_LENGTH_LENGTH, this->capturedPacketLength);
 		}
 
-		unsigned int EnhancedPacketBlock::getOriginalPacketLength()
+		unsigned int enhancedPacketBlock::getOriginalPacketLength()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
 		}
 
-		char* EnhancedPacketBlock::getOriginalPacketLengthExact()
+		char* enhancedPacketBlock::getOriginalPacketLengthExact()
 		{
 			char* toReturn = new char[structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH];
 			std::copy(this->originalPacketLength, this->originalPacketLength + structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
 
-		void EnhancedPacketBlock::setOriginalPacketLength(unsigned int newOriginalPacketLength)
+		void enhancedPacketBlock::setOriginalPacketLength(unsigned int newOriginalPacketLength)
 		{
 			delete[] this->originalPacketLength;
 			this->originalPacketLength = wayne::numberUtil::numberToBytesStatic(newOriginalPacketLength);
 		}
 
-		void EnhancedPacketBlock::setOriginalPacketLengthExact(char* newOriginalPacketLengthExact)
+		void enhancedPacketBlock::setOriginalPacketLengthExact(char* newOriginalPacketLengthExact)
 		{
 			delete[] this->originalPacketLength;
 			this->originalPacketLength  = new char[structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH];
 			std::copy(newOriginalPacketLengthExact, newOriginalPacketLengthExact + structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH, this->originalPacketLength);
 		}
 
-		char* EnhancedPacketBlock::getPacketData()
+		char* enhancedPacketBlock::getPacketData()
 		{
 			char* toReturn = new char[wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER)];
 			std::copy(this->packetData, this->packetData + wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER), toReturn);
 			return toReturn;
 		}
 
-		void EnhancedPacketBlock::setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength, unsigned int newOriginalPacketLength)
+		void enhancedPacketBlock::setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength, unsigned int newOriginalPacketLength)
 		{
 			updateBlockLength(-(wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER)));
 			delete[] this->packetData;
@@ -392,7 +392,7 @@ namespace wayne {
 			this->originalPacketLength = wayne::numberUtil::numberToBytesStatic(newOriginalPacketLength);
 		}
 
-		optionTypes* EnhancedPacketBlock::getAllOptionKeys()
+		optionTypes* enhancedPacketBlock::getAllOptionKeys()
 		{
 			optionTypes* allKeys = new optionTypes[this->options.size()];
 			int counter = 0;
@@ -404,12 +404,12 @@ namespace wayne {
 			return allKeys;
 		}
 		
-		unsigned int EnhancedPacketBlock::getAllOptionCount()
+		unsigned int enhancedPacketBlock::getAllOptionCount()
 		{
 			return (unsigned int)this->options.size();
 		}
 
-		char* EnhancedPacketBlock::getOption(optionTypes option)
+		char* enhancedPacketBlock::getOption(optionTypes option)
 		{
 			char* toReturn;
 			if (isOptionExist(option))
@@ -456,7 +456,7 @@ namespace wayne {
 			}
 		}
 
-		bool EnhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
+		bool enhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
 			if (isOptionAcceptable(option))
 			{
@@ -531,7 +531,7 @@ namespace wayne {
 			}
 		}
 
-		bool EnhancedPacketBlock::isOptionExist(optionTypes option)
+		bool enhancedPacketBlock::isOptionExist(optionTypes option)
 		{
 			for (auto const& [key, value] : this->options)
 			{
@@ -543,7 +543,7 @@ namespace wayne {
 			return false;
 		}
 
-		bool EnhancedPacketBlock::isOptionAcceptable(optionTypes option)
+		bool enhancedPacketBlock::isOptionAcceptable(optionTypes option)
 		{
 			switch (option)
 			{
@@ -561,7 +561,7 @@ namespace wayne {
 			}
 		}
 
-		bool EnhancedPacketBlock::isDynamicLengthOption(optionTypes option)
+		bool enhancedPacketBlock::isDynamicLengthOption(optionTypes option)
 		{
 			switch(option)
 			{
@@ -575,7 +575,7 @@ namespace wayne {
 			}
 		}
 
-		bool EnhancedPacketBlock::isStaticLengthOption(optionTypes option)
+		bool enhancedPacketBlock::isStaticLengthOption(optionTypes option)
 		{
 			switch(option)
 			{

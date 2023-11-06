@@ -13,7 +13,7 @@
 namespace wayne {
 	namespace PCAP {
 
-	class EnhancedPacketBlock: public block {
+	class enhancedPacketBlock: public block {
 	protected:
 		char* interfaceId = nullptr;
 		char* timestampUpper = nullptr;
@@ -23,14 +23,14 @@ namespace wayne {
 		char* packetData = nullptr;
 		std::map<optionTypes, char*> options;
 	public:
-		EnhancedPacketBlock();
-		EnhancedPacketBlock(unsigned int initInterfaceId, unsigned long long timestamp, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData);
-		virtual ~EnhancedPacketBlock();
-		EnhancedPacketBlock(const EnhancedPacketBlock &other);
-		EnhancedPacketBlock(EnhancedPacketBlock &&other);
-		EnhancedPacketBlock& operator=(const EnhancedPacketBlock &other);
-		EnhancedPacketBlock& operator=(EnhancedPacketBlock &&other);
-		bool operator==(const EnhancedPacketBlock &other);
+		enhancedPacketBlock();
+		enhancedPacketBlock(unsigned int initInterfaceId, unsigned long long timestamp, unsigned int initCapturedPacketLength, unsigned int initOriginalPacketLength, char* packetData);
+		virtual ~enhancedPacketBlock();
+		enhancedPacketBlock(const enhancedPacketBlock &other);
+		enhancedPacketBlock(enhancedPacketBlock &&other);
+		enhancedPacketBlock& operator=(const enhancedPacketBlock &other);
+		enhancedPacketBlock& operator=(enhancedPacketBlock &&other);
+		bool operator==(const enhancedPacketBlock &other);
 
 		unsigned int getInterfaceId();
 		char* getInterfaceIdExact();
