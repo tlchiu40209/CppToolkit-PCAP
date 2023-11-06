@@ -56,24 +56,160 @@ namespace wayne {
 			setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER));
 			for (auto const& [key, option] : other.options)
 			{
-
+				char* newOption;
+				int optionLength;
+				if (isDynamicLengthOption(key))
+				{
+					optionLength = std::strlen(option);
+				}
+				else
+				{
+					switch(key)
+					{
+						case optionTypes::EPB_DROPCOUNT:
+							optionLength = optionByteLength::EPB_DROPCOUNT_LENGTH;
+							break;
+						case optionTypes::EPB_FLAGS:
+							optionLength = optionByteLength::EPB_FLAGS_LENGTH;
+							break;
+						case optionTypes::EPB_PACKETID:
+							optionLength = optionByteLength::EPB_PACKETID_LENGTH;
+							break;
+						case optionTypes::EPB_QUEUE:
+							default:
+							break;
+					}
+				}
+				std::copy(option, option + optionLength, newOption);
+				this->options.insert(std::pair<optionTypes, char*>(key, newOption));
 			}
 		}
 
 		EnhancedPacketBlock::EnhancedPacketBlock(EnhancedPacketBlock &&other) {
-			// TODO Auto-generated constructor stub
+			setInterfaceIdExact(other.interfaceId);
+			delete[] other.interfaceId;
+			setTimestampUpperExact(other.timestampUpper);
+			delete[] other.timestampUpper;
+			setTimestampLowerExact(other.timestampLower);
+			delete[] other.timestampLower;
+			setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER));
+			delete[] other.capturedPacketLength;
+			delete[] other.originalPacketLength;
+			delete[] other.packetData;
+			for (auto const& [key, option] : other.options)
+			{
+				char* newOption;
+				int optionLength;
+				if (isDynamicLengthOption(key))
+				{
+					optionLength = std::strlen(option);
+				}
+				else
+				{
+					switch(key)
+					{
+						case optionTypes::EPB_DROPCOUNT:
+							optionLength = optionByteLength::EPB_DROPCOUNT_LENGTH;
+							break;
+						case optionTypes::EPB_FLAGS:
+							optionLength = optionByteLength::EPB_FLAGS_LENGTH;
+							break;
+						case optionTypes::EPB_PACKETID:
+							optionLength = optionByteLength::EPB_PACKETID_LENGTH;
+							break;
+						case optionTypes::EPB_QUEUE:
+							default:
+							break;
+					}
+				}
+				std::copy(option, option + optionLength, newOption);
+				this->options.insert(std::pair<optionTypes, char*>(key, newOption));
+				delete[] option;
+			}
+			other.options.clear();
+		}
+
+		EnhancedPacketBlock& EnhancedPacketBlock::operator=(const EnhancedPacketBlock &other) {
+			setInterfaceIdExact(other.interfaceId);
+			setTimestampUpperExact(other.timestampUpper);
+			setTimestampLowerExact(other.timestampLower);
+			setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER));
+			for (auto const& [key, option] : other.options)
+			{
+				char* newOption;
+				int optionLength;
+				if (isDynamicLengthOption(key))
+				{
+					optionLength = std::strlen(option);
+				}
+				else
+				{
+					switch(key)
+					{
+						case optionTypes::EPB_DROPCOUNT:
+							optionLength = optionByteLength::EPB_DROPCOUNT_LENGTH;
+							break;
+						case optionTypes::EPB_FLAGS:
+							optionLength = optionByteLength::EPB_FLAGS_LENGTH;
+							break;
+						case optionTypes::EPB_PACKETID:
+							optionLength = optionByteLength::EPB_PACKETID_LENGTH;
+							break;
+						case optionTypes::EPB_QUEUE:
+							default:
+							break;
+					}
+				}
+				std::copy(option, option + optionLength, newOption);
+				this->options.insert(std::pair<optionTypes, char*>(key, newOption));
+			}
+			return *this;
 
 		}
 
-		EnhancedPacketBlock& EnhancedPacketBlock::operator=(
-				const EnhancedPacketBlock &other) {
-			// TODO Auto-generated method stub
-
-		}
-
-		EnhancedPacketBlock& EnhancedPacketBlock::operator=(
-				EnhancedPacketBlock &&other) {
-			// TODO Auto-generated method stub
+		EnhancedPacketBlock& EnhancedPacketBlock::operator=(EnhancedPacketBlock &&other) {
+			setInterfaceIdExact(other.interfaceId);
+			delete[] other.interfaceId;
+			setTimestampUpperExact(other.timestampUpper);
+			delete[] other.timestampUpper;
+			setTimestampLowerExact(other.timestampLower);
+			delete[] other.timestampLower;
+			setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER));
+			delete[] other.capturedPacketLength;
+			delete[] other.originalPacketLength;
+			delete[] other.packetData;
+			for (auto const& [key, option] : other.options)
+			{
+				char* newOption;
+				int optionLength;
+				if (isDynamicLengthOption(key))
+				{
+					optionLength = std::strlen(option);
+				}
+				else
+				{
+					switch(key)
+					{
+						case optionTypes::EPB_DROPCOUNT:
+							optionLength = optionByteLength::EPB_DROPCOUNT_LENGTH;
+							break;
+						case optionTypes::EPB_FLAGS:
+							optionLength = optionByteLength::EPB_FLAGS_LENGTH;
+							break;
+						case optionTypes::EPB_PACKETID:
+							optionLength = optionByteLength::EPB_PACKETID_LENGTH;
+							break;
+						case optionTypes::EPB_QUEUE:
+							default:
+							break;
+					}
+				}
+				std::copy(option, option + optionLength, newOption);
+				this->options.insert(std::pair<optionTypes, char*>(key, newOption));
+				delete[] option;
+			}
+			other.options.clear();
+			return *this;
 
 		}
 
@@ -323,7 +459,77 @@ namespace wayne {
 
 		bool EnhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
+			if (isOptionAcceptable(option))
+			{
+				/* Handling the length request. */
+				if (isOptionExist(option))
+				{
+					if (isDynamicLengthOption(option))
+					{
+						int recoveredLength = std::strlen(this->options[option]);
+						updateBlockLength(-recoveredLength);
+						updateBlockLength(valueLength);
+					}
+				}
+				else
+				{
+					if (isDynamicLengthOption(option))
+					{
+						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+					}
+					else
+					{
+						switch (option)
+						{
+							case optionTypes::EPB_DROPCOUNT:
+								if (valueLength != optionByteLength::EPB_DROPCOUNT_LENGTH)
+								{
+									return false;
+								}
+								updateBlockLength((int)4 + optionByteLength::EPB_DROPCOUNT_LENGTH);
+								break;
+							case optionTypes::EPB_FLAGS:
+								if (valueLength != optionByteLength::EPB_FLAGS_LENGTH)
+								{
+									return false;
+								}
+								updateBlockLength((int)4 + optionByteLength::EPB_FLAGS_LENGTH);
+								break;
+							case optionTypes::EPB_PACKETID:
+								if (valueLength != optionByteLength::EPB_PACKETID_LENGTH)
+								{
+									return false;
+								}
+								updateBlockLength((int)4 + optionByteLength::EPB_PACKETID_LENGTH);
+								break;
+							case optionTypes::EPB_QUEUE:
+								if (valueLength != optionByteLength::EPB_QUEUE_LENGTH)
+								{
+									return false;
+								}
+								updateBlockLength((int)4 + optionByteLength::EPB_QUEUE_LENGTH);
+								break;
+							default:
+								return false;
+								break;
+						}
+					}
+				}
+				/* End of handling the length request */
 
+				if (isOptionExist(option))
+				{
+					delete[] this->options[option];
+				}
+				char* newOption = new char[valueLength];
+				std::copy(value, value + valueLength, newOption);
+				this->options[option] = newOption;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		bool EnhancedPacketBlock::isOptionExist(optionTypes option)

@@ -67,7 +67,7 @@ namespace wayne {
 				{
 					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
 					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, option)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
 				}
 				else
 				{
@@ -154,6 +154,7 @@ namespace wayne {
 							//Don't do anything.
 						}
 					}
+					this->options.insert(std::pair<optionTypes, char*>(key, newOption));
 				}
 			}
 		}
