@@ -16,11 +16,10 @@ namespace wayne {
 	namespace PCAP {
 		class block {
 			protected:
-				char* blockType;
-				char* blockLength;
-
-				void setBlockType(char* newBlockType);
+				char* blockType = nullptr;
+				char* blockLength = nullptr;
 				void setBlockType(blockTypes type);
+				void setBlockTypeExact(char* newBlockType);
 				bool updateBlockLength(int deltaLength);
 				bool updateBlockLengthExact(const char* deltaLengthExact);
 				void setBlockLength(unsigned int exactLength);
@@ -39,9 +38,6 @@ namespace wayne {
 
 				int getBlockLength();
 				char* getBlockLengthExact();
-				//int getBlockLengthWithPadding(); /*The reason why it should be here is due to that reading PCAP is 4 bytes each read.*/
-				//char* getBlockLengthWithPaddingExact();
-
 		};
 	} /* namespace PCAP */
 } /* namespace wayne */

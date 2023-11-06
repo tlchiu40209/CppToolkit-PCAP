@@ -30,31 +30,23 @@ namespace wayne {
 		}
 
 		block::block(const block &other) { /*Copy constructor*/
-			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
-			std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
-			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
-			std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
+			setBlockTypeExact(other.blockType);
+			setBlockLengthExact(other.blockLength);
 		}
 
 		block::block(block &&other) { /*Move Constructor*/
-			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
-			std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
-			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
-			std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
-
-			delete[] other.blockType;
-			delete[] other.blockLength;
+			setBlockTypeExact(other.blockType);
+			setBlockLengthExact(other.blockLength);
+			other.blockType = nullptr;
+			other.blockLength = nullptr;
+			/* When moved, the original item will call deconstructor! perform delete[] here will trigger double freeing!*/
 		}
 
 		block& block::operator=(const block &other) { /*Copy Assign Constructor*/
 			if (this != &other)
 			{
-				delete[] this->blockType;
-				this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
-				std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
-				delete[] this->blockLength;
-				this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
-				std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
+				setBlockTypeExact(other.blockType);
+				setBlockLengthExact(other.blockLength);
 			}
 			return *this;
 		}
@@ -62,24 +54,12 @@ namespace wayne {
 		block& block::operator=(block &&other) { /*Move Assign constructor*/
 			if (this != &other)
 			{
-				delete[] this->blockType;
-				this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
-				std::copy(other.blockType, other.blockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
-				delete[] this->blockLength;
-				this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
-				std::copy(other.blockLength, other.blockLength + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
-
-				delete[] other.blockType;
-				delete[] other.blockLength;
+				setBlockTypeExact(other.blockType);
+				setBlockLengthExact(other.blockLength);
+				other.blockType = nullptr;
+				other.blockLength = nullptr;
 			}
 			return *this;
-		}
-
-		void block::setBlockType(char* newBlockType)
-		{
-			delete[] this->blockType;
-			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
-			std::copy(newBlockType, newBlockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
 		}
 
 		void block::setBlockType(blockTypes type)
@@ -88,9 +68,16 @@ namespace wayne {
 			this->blockType = wayne::numberUtil::numberToBytesStatic((int)type);
 		}
 
+		void block::setBlockTypeExact(char* newBlockType)
+		{
+			delete[] this->blockType;
+			this->blockType = new char[structByteLength::BLOCK_TYPE_LENGTH];
+			std::copy(newBlockType, newBlockType + structByteLength::BLOCK_TYPE_LENGTH, this->blockType);
+		}
+
 		blockTypes block::getBlockType()
 		{
-			return (blockType)(wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER));
+			return (blockTypes)(wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER));
 		}
 
 		char* block::getBlockTypeExact()
@@ -122,11 +109,11 @@ namespace wayne {
 			unsigned int blockLengthRecovered = wayne::numberUtil::bytesStaticToNumber(this->blockLength, blockLengthRecovered);
 			delete this->blockLength;
 			if (blockLengthRecovered + deltaLength < 0) {
-				this->blockLength = wayne::numberUtil::numberToBytes((unsigned int)0);
+				this->blockLength = wayne::numberUtil::numberToBytesStatic((unsigned int)0);
 				return false;
 			} else {
 				blockLengthRecovered += deltaLength;
-				this->blockLength = wayne::numberUtil::numberToBytes(blockLengthRecovered);
+				this->blockLength = wayne::numberUtil::numberToBytesStatic(blockLengthRecovered);
 				return true;
 			}
 		}
@@ -149,7 +136,6 @@ namespace wayne {
 			delete[] this->blockLength;
 			this->blockLength = new char[structByteLength::BLOCK_LENGTH_LENGTH];
 			std::copy(exactLengthExact, exactLengthExact + structByteLength::BLOCK_LENGTH_LENGTH, this->blockLength);
-
 		}
 
 	} /* namespace PCAP */
