@@ -16,11 +16,11 @@ namespace wayne {
 
 	class interfaceDescriptionBlock: public block {
 	protected:
-		char* linkType;	/*16 Bits*/
-		char* reserved;	/*16 Bits, always 0x0, 0x0*/
-		char* snapLength;	/*32 bits*/
-		std::map<optionTypes, char*> options; // @suppress("Invalid template argument")
-		std::map<optionTypes, unsigned int> multCounts; // @suppress("Invalid template argument") This is an implementation for counting multiple occurrence
+		char* linkType = nullptr;	/*16 Bits*/
+		char* reserved = nullptr;	/*16 Bits, always 0x0, 0x0*/
+		char* snapLength = nullptr;	/*32 bits*/
+		std::map<optionTypes, char*> options;
+		std::map<optionTypes, unsigned int> multCounts;
 	public:
 		interfaceDescriptionBlock();
 		interfaceDescriptionBlock(linkTypes initType, unsigned int initSnapLength);

@@ -35,11 +35,11 @@ namespace wayne {
 		}
 
 		block::block(block &&other) { /*Move Constructor*/
-			setBlockTypeExact(other.blockType);
-			setBlockLengthExact(other.blockLength);
+			this->blockType = other.blockType;
+			this->blockLength = other.blockLength;
 			other.blockType = nullptr;
 			other.blockLength = nullptr;
-			/* When moved, the original item will call deconstructor! perform delete[] here will trigger double freeing!*/
+			/* Move the pointer to other item, and the temp "other" item will be freed.*/
 		}
 
 		block& block::operator=(const block &other) { /*Copy Assign Constructor*/
@@ -54,8 +54,8 @@ namespace wayne {
 		block& block::operator=(block &&other) { /*Move Assign constructor*/
 			if (this != &other)
 			{
-				setBlockTypeExact(other.blockType);
-				setBlockLengthExact(other.blockLength);
+				this->blockType = other.blockType;
+				this->blockLength = other.blockLength;
 				other.blockType = nullptr;
 				other.blockLength = nullptr;
 			}

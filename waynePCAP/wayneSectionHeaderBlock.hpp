@@ -16,10 +16,10 @@ namespace wayne {
 	namespace PCAP {
 		class sectionHeaderBlock: protected block {
 			protected:
-				char* byteOrder;		/*32 Bits*/
-				char* majorVersion;	/*16 Bits*/
-				char* minorVersion;	/*16 Bits*/
-				char* sectionLength;	/*64 Bits, -1 if the section length is not specified */
+				char* byteOrder = nullptr;		/*32 Bits*/
+				char* majorVersion = nullptr;	/*16 Bits*/
+				char* minorVersion = nullptr;	/*16 Bits*/
+				char* sectionLength = nullptr;	/*64 Bits, -1 if the section length is not specified */
 				std::map<optionTypes, char*> options; // @suppress("Invalid template argument")
 			public:
 				sectionHeaderBlock();

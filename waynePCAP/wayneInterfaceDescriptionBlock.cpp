@@ -17,493 +17,251 @@
 namespace wayne {
 	namespace PCAP {
 
-		interfaceDescriptionBlock::interfaceDescriptionBlock() {
+		interfaceDescriptionBlock::interfaceDescriptionBlock() 
+		{
 			setBlockType(blockTypes::INTERFACE_DESCRIPTION);
 			setLinkType(linkTypes::LINKTYPE_ETHERNET);
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
-			setSnapLength((unsigned int)262144);
+			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE);
+			setSnapLength((unsigned int)structByteDefault::IDB_SNAP_LENGTH_VALUE);
 
 			updateBlockLength(structByteLength::IDB_LINK_TYPE_LENGTH + structByteLength::IDB_RESERVED_LENGTH);
-			updateBlockLength(structByteLength::IDB_SNAP_LENGTH);
+			updateBlockLength(structByteLength::IDB_SNAP_LENGTH_LENGTH);
 		}
 
-		interfaceDescriptionBlock::interfaceDescriptionBlock(linkTypes initType, unsigned int initSnapLength) {
+		interfaceDescriptionBlock::interfaceDescriptionBlock(linkTypes initType, unsigned int initSnapLength) 
+		{
 			setBlockType(blockTypes::INTERFACE_DESCRIPTION);
 			setLinkType(initType);
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
+			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE);
 			setSnapLength(initSnapLength);
 			updateBlockLength(structByteLength::IDB_LINK_TYPE_LENGTH + structByteLength::IDB_RESERVED_LENGTH);
-			updateBlockLength(structByteLength::IDB_SNAP_LENGTH);
+			updateBlockLength(structByteLength::IDB_SNAP_LENGTH_LENGTH);
 		}
 
 		interfaceDescriptionBlock::~interfaceDescriptionBlock() {
 			delete[] this->linkType;
 			delete[] this->reserved;
 			delete[] this->snapLength;
-			for (auto const& [key, option] : this->options) // @suppress("Symbol is not resolved")
+			for (auto const& [key, option] : this->options)
 			{
 				delete[] option;
 
 			}
-			options.clear(); // @suppress("Method cannot be resolved")
+			options.clear();
 		}
 
-		interfaceDescriptionBlock::interfaceDescriptionBlock(const interfaceDescriptionBlock &other) {
+		interfaceDescriptionBlock::interfaceDescriptionBlock(const interfaceDescriptionBlock &other) 
+		{
 			setLinkTypeExact(other.linkType);
 			delete this->reserved;
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
+			this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)];
+			std::copy(other.reserved, other.reserved + structByteLength::IDB_RESERVED_LENGTH, this->reserved);
 			setSnapLengthExact(other.snapLength);
 
-			this->multCounts.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.multCounts) // @suppress("Symbol is not resolved")
+			this->multCounts.clear();
+			for (auto const& [key, option] : other.multCounts)
 			{
-				this->multCounts.insert(std::pair<optionTypes, unsigned int>(key, option)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				this->multCounts[key] = option;
 			}
 
-			this->options.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.options) // @suppress("Symbol is not resolved")
+			this->options.clear();
+			for (auto const& [key, option] : other.options)
 			{
-				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
+				int optionLength = 0;
+				if (isDynamicLengthOption(key))
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					optionLength = std::strlen(option);
 				}
 				else
 				{
-					char* newOption;
-					if (isStaticLengthOptionAllowsMultiple(key)) // @suppress("Invalid arguments")
+					if (isStaticLengthOptionAllowsMultiple(key))
 					{
-						if (isOptionCurrentlyMultiple(key)) // @suppress("Invalid arguments")
+						switch (key)
 						{
-							switch (key)
-							{
 							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
+								optionLength = (isOptionCurrentlyMultiple(key)) ? optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key) : optionByteLength::IF_IPV4ADDR_LENGTH;
 								break;
 							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
+								optionLength = (isOptionCurrentlyMultiple(key)) ? optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key) : optionByteLength::IF_IPV6ADDR_LENGTH;
 								break;
 							default:
-								// Do nothing
 								break;
-							}
-						}
-						else
-						{
-							switch (key)
-							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV4ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV6ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
-							}
 						}
 					}
 					else
 					{
-						char* newOption;
 						switch (key)
 						{
 						case optionTypes::IF_MACADDR:
-							newOption = new char[optionByteLength::IF_MACADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_MACADDR_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_MACADDR_LENGTH;
 							break;
 						case optionTypes::IF_EUIADDR:
-							newOption = new char[optionByteLength::IF_EUIADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_EUIADDR_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_EUIADDR_LENGTH;
 							break;
 						case optionTypes::IF_SPEED:
-							newOption = new char[optionByteLength::IF_SPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_SPEED_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_SPEED_LENGTH;
 							break;
 						case optionTypes::IF_TSRESOL:
-							newOption = new char[optionByteLength::IF_TSRESOL_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSRESOL_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_TSRESOL_LENGTH;
 							break;
 						case optionTypes::IF_TZONE:
-							newOption = new char[optionByteLength::IF_TZONE_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TZONE_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_TZONE_LENGTH;
 							break;
 						case optionTypes::IF_FCSLEN:
-							newOption = new char[optionByteLength::IF_FCSLEN_LENGTH];
-							std::copy(option, option + optionByteLength::IF_FCSLEN_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_FCSLEN_LENGTH;
 							break;
 						case optionTypes::IF_TSOFFSET:
-							newOption = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSOFFSET_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_TSOFFSET_LENGTH;
 							break;
 						case optionTypes::IF_TXSPEED:
-							newOption = new char[optionByteLength::IF_TXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_TXSPEED_LENGTH;
 							break;
 						case optionTypes::IF_RXSPEED:
-							newOption = new char[optionByteLength::IF_RXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_RXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						default:
-							//Don't do anything.
-						}
-					}
-					this->options.insert(std::pair<optionTypes, char*>(key, newOption));
-				}
-			}
-		}
-
-		interfaceDescriptionBlock::interfaceDescriptionBlock(interfaceDescriptionBlock &&other) {
-			setLinkTypeExact(other.linkType);
-			delete[] other.linkType;
-
-			delete this->reserved;
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
-			delete[] other.reserved;
-
-			setSnapLengthExact(other.snapLength);
-			delete[] other.snapLength;
-
-			this->multCounts.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.multCounts) // @suppress("Symbol is not resolved")
-			{
-				this->multCounts.insert(std::pair<optionTypes, unsigned int>(key, option)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
-			}
-			other.multCounts.clear(); // @suppress("Method cannot be resolved")
-
-			this->options.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.options) // @suppress("Symbol is not resolved")
-			{
-				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
-				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, option)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
-				}
-				else
-				{
-					char* newOption;
-					if (isStaticLengthOptionAllowsMultiple(key)) // @suppress("Invalid arguments")
-					{
-						if (isOptionCurrentlyMultiple(key)) // @suppress("Invalid arguments")
-						{
-							switch (key)
-							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
-							}
-						}
-						else
-						{
-							switch (key)
-							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV4ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV6ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
-							}
-						}
-					}
-					else
-					{
-						char* newOption;
-						switch (key)
-						{
-						case optionTypes::IF_MACADDR:
-							newOption = new char[optionByteLength::IF_MACADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_MACADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_EUIADDR:
-							newOption = new char[optionByteLength::IF_EUIADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_EUIADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_SPEED:
-							newOption = new char[optionByteLength::IF_SPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_SPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSRESOL:
-							newOption = new char[optionByteLength::IF_TSRESOL_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSRESOL_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TZONE:
-							newOption = new char[optionByteLength::IF_TZONE_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TZONE_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_FCSLEN:
-							newOption = new char[optionByteLength::IF_FCSLEN_LENGTH];
-							std::copy(option, option + optionByteLength::IF_FCSLEN_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSOFFSET:
-							newOption = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSOFFSET_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TXSPEED:
-							newOption = new char[optionByteLength::IF_TXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_RXSPEED:
-							newOption = new char[optionByteLength::IF_RXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_RXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
+							optionLength = optionByteLength::IF_RXSPEED_LENGTH;
 							break;
 						default:
 							//Don't do anything.
 						}
 					}
 				}
-				delete[] option;
+				this->options[key] = new char[optionLength];
+				std::copy(option, option + optionLength, this->options[key]);
 			}
-			other.options.clear(); // @suppress("Method cannot be resolved")
 		}
 
-		interfaceDescriptionBlock& interfaceDescriptionBlock::operator=(const interfaceDescriptionBlock &other) {
-			setLinkTypeExact(other.linkType);
-			delete this->reserved;
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
-			setSnapLengthExact(other.snapLength);
+		interfaceDescriptionBlock::interfaceDescriptionBlock(interfaceDescriptionBlock &&other) 
+		{
+			this->linkType = other.linkType;
+			this->reserved = other.reserved;
+			this->snapLength = other.snapLength;
+			other.linkType = nullptr;
+			other.reserved = nullptr;
+			other.snapLength = nullptr;
 
-			this->multCounts.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.multCounts) // @suppress("Symbol is not resolved")
+			this->multCounts.clear();
+			for (auto const& [key, option] : other.multCounts)
 			{
-				this->multCounts.insert(std::pair<optionTypes, unsigned int>(key, option)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				this->multCounts[key] = option;
+				other.multCounts[key] = (unsigned int)0;
 			}
 
-			this->options.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.options) // @suppress("Symbol is not resolved")
+			this->options.clear();
+			for (auto const& [key, option] : other.options)
 			{
-				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
+				this->options[key] = option;
+				other.options[key] = nullptr;
+			}
+
+		}
+
+		interfaceDescriptionBlock& interfaceDescriptionBlock::operator=(const interfaceDescriptionBlock &other)
+		{
+			if (this != &other)
+			{
+				setLinkTypeExact(other.linkType);
+				delete this->reserved;
+				this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)];
+				std::copy(other.reserved, other.reserved + structByteLength::IDB_RESERVED_LENGTH, this->reserved);
+				setSnapLengthExact(other.snapLength);
+
+				this->multCounts.clear();
+				for (auto const& [key, option] : other.multCounts)
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, option)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					this->multCounts[key] = option;
 				}
-				else
+
+				this->options.clear();
+				for (auto const& [key, option] : other.options)
 				{
-					char* newOption;
-					if (isStaticLengthOptionAllowsMultiple(key)) // @suppress("Invalid arguments")
+					int optionLength = 0;
+					if (isDynamicLengthOption(key))
 					{
-						if (isOptionCurrentlyMultiple(key)) // @suppress("Invalid arguments")
+						optionLength = std::strlen(option);
+					}
+					else
+					{
+						if (isStaticLengthOptionAllowsMultiple(key))
 						{
 							switch (key)
 							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
+								case optionTypes::IF_IPV4ADDR:
+									optionLength = (isOptionCurrentlyMultiple(key)) ? optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key) : optionByteLength::IF_IPV4ADDR_LENGTH;
+									break;
+								case optionTypes::IF_IPV6ADDR:
+									optionLength = (isOptionCurrentlyMultiple(key)) ? optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key) : optionByteLength::IF_IPV6ADDR_LENGTH;
+									break;
+								default:
+									break;
 							}
 						}
 						else
 						{
 							switch (key)
 							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV4ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
+							case optionTypes::IF_MACADDR:
+								optionLength = optionByteLength::IF_MACADDR_LENGTH;
 								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV6ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
+							case optionTypes::IF_EUIADDR:
+								optionLength = optionByteLength::IF_EUIADDR_LENGTH;
+								break;
+							case optionTypes::IF_SPEED:
+								optionLength = optionByteLength::IF_SPEED_LENGTH;
+								break;
+							case optionTypes::IF_TSRESOL:
+								optionLength = optionByteLength::IF_TSRESOL_LENGTH;
+								break;
+							case optionTypes::IF_TZONE:
+								optionLength = optionByteLength::IF_TZONE_LENGTH;
+								break;
+							case optionTypes::IF_FCSLEN:
+								optionLength = optionByteLength::IF_FCSLEN_LENGTH;
+								break;
+							case optionTypes::IF_TSOFFSET:
+								optionLength = optionByteLength::IF_TSOFFSET_LENGTH;
+								break;
+							case optionTypes::IF_TXSPEED:
+								optionLength = optionByteLength::IF_TXSPEED_LENGTH;
+								break;
+							case optionTypes::IF_RXSPEED:
+								optionLength = optionByteLength::IF_RXSPEED_LENGTH;
 								break;
 							default:
-								// Do nothing
-								break;
+								//Don't do anything.
 							}
 						}
 					}
-					else
-					{
-						char* newOption;
-						switch (key)
-						{
-						case optionTypes::IF_MACADDR:
-							newOption = new char[optionByteLength::IF_MACADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_MACADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_EUIADDR:
-							newOption = new char[optionByteLength::IF_EUIADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_EUIADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_SPEED:
-							newOption = new char[optionByteLength::IF_SPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_SPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSRESOL:
-							newOption = new char[optionByteLength::IF_TSRESOL_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSRESOL_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TZONE:
-							newOption = new char[optionByteLength::IF_TZONE_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TZONE_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_FCSLEN:
-							newOption = new char[optionByteLength::IF_FCSLEN_LENGTH];
-							std::copy(option, option + optionByteLength::IF_FCSLEN_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSOFFSET:
-							newOption = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSOFFSET_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TXSPEED:
-							newOption = new char[optionByteLength::IF_TXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_RXSPEED:
-							newOption = new char[optionByteLength::IF_RXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_RXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						default:
-							//Don't do anything.
-						}
-					}
+					this->options[key] = new char[optionLength];
+					std::copy(option, option + optionLength, this->options[key]);
 				}
 			}
 			return *this;
 		}
 
-		interfaceDescriptionBlock& interfaceDescriptionBlock::operator=(interfaceDescriptionBlock &&other) {
-			setLinkTypeExact(other.linkType);
-			delete[] other.linkType;
-
-			delete this->reserved;
-			this->reserved = wayne::numberUtil::numberToBytesStatic(short(0));
-			delete[] other.reserved;
-
-			setSnapLengthExact(other.snapLength);
-			delete[] other.snapLength;
-
-			this->multCounts.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.multCounts) // @suppress("Symbol is not resolved")
+		interfaceDescriptionBlock& interfaceDescriptionBlock::operator=(interfaceDescriptionBlock &&other)
+		{
+			if (this != &other)
 			{
-				this->multCounts.insert(std::pair<optionTypes, unsigned int>(key, option)); // @suppress("Method cannot be resolved") // @suppress("Symbol is not resolved")
-			}
-			other.multCounts.clear(); // @suppress("Method cannot be resolved")
+				this->linkType = other.linkType;
+				this->reserved = other.reserved;
+				this->snapLength = other.snapLength;
+				other.linkType = nullptr;
+				other.reserved = nullptr;
+				other.snapLength = nullptr;
 
-			this->options.clear(); // @suppress("Method cannot be resolved")
-			for (auto const& [key, option] : other.options) // @suppress("Symbol is not resolved")
-			{
-				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
+				this->multCounts.clear();
+				for (auto const& [key, option] : other.multCounts)
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, option)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					this->multCounts[key] = option;
+					other.multCounts[key] = (unsigned int)0;
 				}
-				else
+
+				this->options.clear();
+				for (auto const& [key, option] : other.options)
 				{
-					char* newOption;
-					if (isStaticLengthOptionAllowsMultiple(key)) // @suppress("Invalid arguments")
-					{
-						if (isOptionCurrentlyMultiple(key)) // @suppress("Invalid arguments")
-						{
-							switch (key)
-							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)]; // @suppress("Invalid arguments")
-								std::copy(option, option + (optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(key)), newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
-							}
-						}
-						else
-						{
-							switch (key)
-							{
-							case optionTypes::IF_IPV4ADDR:
-								newOption = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV4ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								newOption = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-								std::copy(option, option + optionByteLength::IF_IPV6ADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-								break;
-							default:
-								// Do nothing
-								break;
-							}
-						}
-					}
-					else
-					{
-						char* newOption;
-						switch (key)
-						{
-						case optionTypes::IF_MACADDR:
-							newOption = new char[optionByteLength::IF_MACADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_MACADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_EUIADDR:
-							newOption = new char[optionByteLength::IF_EUIADDR_LENGTH];
-							std::copy(option, option + optionByteLength::IF_EUIADDR_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_SPEED:
-							newOption = new char[optionByteLength::IF_SPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_SPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSRESOL:
-							newOption = new char[optionByteLength::IF_TSRESOL_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSRESOL_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TZONE:
-							newOption = new char[optionByteLength::IF_TZONE_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TZONE_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_FCSLEN:
-							newOption = new char[optionByteLength::IF_FCSLEN_LENGTH];
-							std::copy(option, option + optionByteLength::IF_FCSLEN_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TSOFFSET:
-							newOption = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TSOFFSET_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_TXSPEED:
-							newOption = new char[optionByteLength::IF_TXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_TXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						case optionTypes::IF_RXSPEED:
-							newOption = new char[optionByteLength::IF_RXSPEED_LENGTH];
-							std::copy(option, option + optionByteLength::IF_RXSPEED_LENGTH, newOption); // @suppress("Invalid arguments")
-							break;
-						default:
-							//Don't do anything.
-						}
-					}
+					this->options[key] = option;
+					other.options[key] = nullptr;
 				}
-				delete[] option;
 			}
-			other.options.clear(); // @suppress("Method cannot be resolved")
 			return *this;
 		}
 
@@ -514,7 +272,9 @@ namespace wayne {
 
 		char* interfaceDescriptionBlock::getLinkTypeExact()
 		{
-			return this->linkType;
+			char* toReturn = new char[structByteLength::IDB_LINK_TYPE_LENGTH];
+			std::copy(this->linkType, this->linkType + structByteLength::IDB_LINK_TYPE_LENGTH, toReturn);
+			return toReturn;
 		}
 
 		void interfaceDescriptionBlock::setLinkType(linkTypes type)
@@ -537,7 +297,9 @@ namespace wayne {
 
 		char* interfaceDescriptionBlock::getSnapLengthExact()
 		{
-			return this->snapLength;
+			char* toReturn = new char[structByteLength::IDB_SNAP_LENGTH_LENGTH];
+			std::copy(this->snapLength, this->snapLength + structByteLength::IDB_SNAP_LENGTH_LENGTH, toReturn);
+			return toReturn;
 		}
 
 		void interfaceDescriptionBlock::setSnapLength(unsigned int newSnapLength)
@@ -549,15 +311,15 @@ namespace wayne {
 		void interfaceDescriptionBlock::setSnapLengthExact(const char* newSnapLengthExact)
 		{
 			delete[] this->snapLength;
-			this->snapLength = new char[structByteLength::IDB_SNAP_LENGTH];
-			std::copy(newSnapLengthExact, newSnapLengthExact + structByteLength::IDB_SNAP_LENGTH, this->snapLength);
+			this->snapLength = new char[structByteLength::IDB_SNAP_LENGTH_LENGTH];
+			std::copy(newSnapLengthExact, newSnapLengthExact + structByteLength::IDB_SNAP_LENGTH_LENGTH, this->snapLength);
 		}
 
 		optionTypes* interfaceDescriptionBlock::getAllOptionKeys()
 		{
-			optionTypes* allKeys = new optionTypes[this->options.size()]; // @suppress("Method cannot be resolved")
+			optionTypes* allKeys = new optionTypes[this->options.size()];
 			int counter = 0;
-			for (auto const& [key, option] : this->options) // @suppress("Symbol is not resolved")
+			for (auto const& [key, option] : this->options)
 			{
 				allKeys[counter] = key;
 				counter++;
@@ -567,34 +329,34 @@ namespace wayne {
 
 		unsigned int interfaceDescriptionBlock::getAllOptionsCount()
 		{
-			return this->options.size(); // @suppress("Method cannot be resolved")
+			return this->options.size();
 		}
 
 		bool interfaceDescriptionBlock::isOptionAcceptable(optionTypes option)
 		{
 			switch (option)
 			{
-			case optionTypes::IF_DESCRIPTION:
-			case optionTypes::IF_EUIADDR:
-			case optionTypes::IF_FCSLEN:
-			case optionTypes::IF_FILTER:
-			case optionTypes::IF_HARDWARE:
-			case optionTypes::IF_IPV4ADDR:
-			case optionTypes::IF_IPV6ADDR:
-			case optionTypes::IF_MACADDR:
-			case optionTypes::IF_NAME:
-			case optionTypes::IF_OS:
-			case optionTypes::IF_RXSPEED:
-			case optionTypes::IF_SPEED:
-			case optionTypes::IF_TSOFFSET:
-			case optionTypes::IF_TSRESOL:
-			case optionTypes::IF_TXSPEED:
-			case optionTypes::IF_TZONE:
-				return true;
-				break;
-			default:
-				return false;
-				break;
+				case optionTypes::IF_DESCRIPTION:
+				case optionTypes::IF_EUIADDR:
+				case optionTypes::IF_FCSLEN:
+				case optionTypes::IF_FILTER:
+				case optionTypes::IF_HARDWARE:
+				case optionTypes::IF_IPV4ADDR:
+				case optionTypes::IF_IPV6ADDR:
+				case optionTypes::IF_MACADDR:
+				case optionTypes::IF_NAME:
+				case optionTypes::IF_OS:
+				case optionTypes::IF_RXSPEED:
+				case optionTypes::IF_SPEED:
+				case optionTypes::IF_TSOFFSET:
+				case optionTypes::IF_TSRESOL:
+				case optionTypes::IF_TXSPEED:
+				case optionTypes::IF_TZONE:
+					return true;
+					break;
+				default:
+					return false;
+					break;
 			}
 		}
 
@@ -613,320 +375,268 @@ namespace wayne {
 		char* interfaceDescriptionBlock::getOption(optionTypes option)
 		{
 			char* toReturn;
+			int toReturnLength = 0;
 			if (isOptionExist(option))
 			{
 				if (isDynamicLengthOption(option))
 				{
-					toReturn = new char[std::strlen(this->options[option])];
-					std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
-					return toReturn;
+					toReturnLength = std::strlen(this->options[option]);
 				}
 				else
 				{
-					if (isOptionCurrentlyMultiple(option))
+					if (isStaticLengthOptionAllowsMultiple(option))
 					{
 						switch (option)
 						{
 							case optionTypes::IF_IPV4ADDR:
-							toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]];
-							std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]), toReturn);
-							return toReturn;
-							break;
+								toReturnLength = (isOptionCurrentlyMultiple(option)) ? optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(option) : optionByteLength::IF_IPV4ADDR_LENGTH;
+								break;
 							case optionTypes::IF_IPV6ADDR:
-							toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]];
-							std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]), toReturn);
-							return toReturn;
-							break;
+								toReturnLength = (isOptionCurrentlyMultiple(option)) ? optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(option) : optionByteLength::IF_IPV6ADDR_LENGTH;
+								break;
 							default:
-							return toReturn;
-							break;
+								break;
 						}
 					}
 					else
 					{
 						switch (option)
 						{
-							case optionTypes::IF_IPV4ADDR:
-								toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV4ADDR_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_IPV6ADDR:
-								toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV6ADDR_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_MACADDR:
-								toReturn = new char[optionByteLength::IF_MACADDR_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_MACADDR_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_EUIADDR:
-								toReturn = new char[optionByteLength::IF_EUIADDR_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_EUIADDR_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_SPEED:
-								toReturn = new char[optionByteLength::IF_SPEED_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_SPEED_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_TSRESOL:
-								toReturn = new char[optionByteLength::IF_TSRESOL_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSRESOL_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_TZONE:
-								toReturn = new char[optionByteLength::IF_TZONE_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TZONE_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_FCSLEN:
-								toReturn = new char[optionByteLength::IF_FCSLEN_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_FCSLEN_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_TSOFFSET:
-								toReturn = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSOFFSET_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_TXSPEED:
-								toReturn = new char[optionByteLength::IF_TXSPEED_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TXSPEED_LENGTH, toReturn);
-								return toReturn;
-								break;
-							case optionTypes::IF_RXSPEED:
-								toReturn = new char[optionByteLength::IF_RXSPEED_LENGTH];
-								std::copy(this->options[option], this->options[option] + optionByteLength::IF_RXSPEED_LENGTH, toReturn);
-								return toReturn;
-								break;
-							default:
-								return toReturn;
-								break;
+						case optionTypes::IF_MACADDR:
+							toReturnLength = optionByteLength::IF_MACADDR_LENGTH;
+							break;
+						case optionTypes::IF_EUIADDR:
+							toReturnLength = optionByteLength::IF_EUIADDR_LENGTH;
+							break;
+						case optionTypes::IF_SPEED:
+							toReturnLength = optionByteLength::IF_SPEED_LENGTH;
+							break;
+						case optionTypes::IF_TSRESOL:
+							toReturnLength = optionByteLength::IF_TSRESOL_LENGTH;
+							break;
+						case optionTypes::IF_TZONE:
+							toReturnLength = optionByteLength::IF_TZONE_LENGTH;
+							break;
+						case optionTypes::IF_FCSLEN:
+							toReturnLength = optionByteLength::IF_FCSLEN_LENGTH;
+							break;
+						case optionTypes::IF_TSOFFSET:
+							toReturnLength = optionByteLength::IF_TSOFFSET_LENGTH;
+							break;
+						case optionTypes::IF_TXSPEED:
+							toReturnLength = optionByteLength::IF_TXSPEED_LENGTH;
+							break;
+						case optionTypes::IF_RXSPEED:
+							toReturnLength = optionByteLength::IF_RXSPEED_LENGTH;
+							break;
+						default:
+							//Don't do anything.
 						}
 					}
 				}
+				toReturn = new char[toReturnLength];
+				std::copy(this->options[option], this->options[option] + toReturnLength, toReturn);
+				return toReturn;
 			}
 			else
 			{
-				return toReturn;
+				return nullptr;
 			}
 		}
 
 		bool interfaceDescriptionBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
+			
 			if (isOptionAcceptable(option))
 			{
-				/* Handling the length request. */	
+				/* Determine the original size */
+				int originalOptionLength = -1;
 				if (isOptionExist(option))
 				{
-					int originalOptionLength = 0;
 					if (isDynamicLengthOption(option))
 					{
-						int recoveredLength = std::strlen(this->options[option]);
-						updateBlockLength(-recoveredLength);
-						updateBlockLength(valueLength);
+						originalOptionLength = std::strlen(this->options[option]);
+					}
+					else if (isStaticLengthOptionAllowsMultiple(option))
+					{
+						switch (option)
+						{
+							case optionTypes::IF_IPV4ADDR:
+								originalOptionLength = (isOptionCurrentlyMultiple(option)) ? optionByteLength::IF_IPV4ADDR_LENGTH * getCurrentMultipleOptionsMult(option) : optionByteLength::IF_IPV4ADDR_LENGTH;
+								if (isOptionCurrentlyMultiple(option))
+								{
+									this->multCounts.erase(option);
+								}
+								break;
+							case optionTypes::IF_IPV6ADDR:
+								originalOptionLength = (isOptionCurrentlyMultiple(option)) ? optionByteLength::IF_IPV6ADDR_LENGTH * getCurrentMultipleOptionsMult(option) : optionByteLength::IF_IPV6ADDR_LENGTH;
+								if (isOptionCurrentlyMultiple(option))
+								{
+									this->multCounts.erase(option);
+								}
+								break;
+							default:
+								break;
+						}
 					}
 					else
 					{
-						if (isStaticLengthOptionAllowsMultiple(option))
+						switch (option)
 						{
-							switch (option)
-							{
-								case optionTypes::IF_IPV4ADDR:
-								if (valueLength % (int)optionByteLength::IF_IPV4ADDR_LENGTH != 0)
-								{
-									return false;
-								}
-								if (isOptionCurrentlyMultiple(option))
-								{
-									int recoveredLength = (int)optionByteLength::IF_IPV4ADDR_LENGTH * (int)this->multCounts[option];
-									this->multCounts.erase(option);
-									updateBlockLength(-recoveredLength);
-								}
-								else
-								{
-									updateBlockLength(-((int)optionByteLength::IF_IPV4ADDR_LENGTH));
-								}
-								int multIpv4 = valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH;
-								if (multIpv4 > 1)
-								{
-									this->multCounts[option] = multIpv4;
-								}
-								updateBlockLength(valueLength);
-								break;
-								case optionTypes::IF_IPV6ADDR:
-								if (valueLength % (int)optionByteLength::IF_IPV6ADDR_LENGTH != 0)
-								{
-									return false;
-								}
-								if (isOptionCurrentlyMultiple(option))
-								{
-									int recoveredLength = wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_IPV6ADDR_LENGTH * (int)this->multCounts[option], (int)structByteLength::BLOCK_READ_UNIT);
-									this->multCounts.erase(option);
-									updateBlockLength(-recoveredLength);
-								}
-								else
-								{
-									updateBlockLength(-(wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_IPV4ADDR_LENGTH, (int)structByteLength::BLOCK_READ_UNIT)));
-								}
-								int multIpv6 = valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH;
-								if (multIpv6 > 1)
-								{
-									this->multCounts[option] = multIpv6;
-								}
-								updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
-								break;
-								default:
-								return false;
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					if (isDynamicLengthOption(option))
-					{
-						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
-					}
-					else
-					{
-						if(isStaticLengthOptionAllowsMultiple(option))
-						{
-							switch (option)
-							{
-								case optionTypes::IF_IPV4ADDR:
-								if (valueLength % (int)optionByteLength::IF_IPV4ADDR_LENGTH == 0)
-								{
-									int multIpv4 = valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH;
-									if (multIpv4 > 1)
-									{
-										this->multCounts[optionTypes::IF_IPV4ADDR] = multIpv4;
-									}
-									updateBlockLength((int)4 + valueLength);
-								}
-								else
-								{
-									return false;
-								}
-								break;
-								case optionTypes::IF_IPV6ADDR:
-								if (valueLength % (int)optionByteLength::IF_IPV6ADDR_LENGTH == 0)
-								{
-									int multIpv6 = valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH;
-									if (multIpv6 > 1)
-									{
-										this->multCounts[optionTypes::IF_IPV6ADDR] = multIpv6;
-									}
-									updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
-								}
-								else
-								{
-									return false;
-								}
-								break;
-								default:
-								return false;
-								break;
-							}
-						}
-						else
-						{
-							switch (option)
-							{
 							case optionTypes::IF_MACADDR:
-								if (valueLength != optionByteLength::IF_MACADDR_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_MACADDR_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
-								// Note: Because MAC Address is only 6 bytes, so it needs to be padded.
+								originalOptionLength = optionByteLength::IF_MACADDR_LENGTH;
 								break;
 							case optionTypes::IF_EUIADDR:
-								if (valueLength != optionByteLength::IF_EUIADDR_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + optionByteLength::IF_EUIADDR_LENGTH);
+								originalOptionLength = optionByteLength::IF_EUIADDR_LENGTH;
 								break;
 							case optionTypes::IF_SPEED:
-								if (valueLength != optionByteLength::IF_SPEED_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + optionByteLength::IF_SPEED_LENGTH);
+								originalOptionLength = optionByteLength::IF_SPEED_LENGTH;
 								break;
 							case optionTypes::IF_TSRESOL:
-								if (valueLength != optionByteLength::IF_TSRESOL_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_TSRESOL_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
-								// Note: Because TSRESOL is only 1 byte, so it needs to be padded.
+								originalOptionLength = optionByteLength::IF_TSRESOL_LENGTH;
 								break;
 							case optionTypes::IF_TZONE:
-								if (valueLength != optionByteLength::IF_TZONE_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + optionByteLength::IF_TZONE_LENGTH);
+								originalOptionLength = optionByteLength::IF_TZONE_LENGTH;
 								break;
 							case optionTypes::IF_FCSLEN:
-								if (valueLength != optionByteLength::IF_FCSLEN_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)optionByteLength::IF_FCSLEN_LENGTH, (int)structByteLength::BLOCK_READ_UNIT));
+								originalOptionLength = optionByteLength::IF_FCSLEN_LENGTH;
 								break;
 							case optionTypes::IF_TSOFFSET:
-								if (valueLength != optionByteLength::IF_TSOFFSET_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + optionByteLength::IF_TSOFFSET_LENGTH);
+								originalOptionLength = optionByteLength::IF_TSOFFSET_LENGTH;
 								break;
 							case optionTypes::IF_TXSPEED:
-								if (valueLength != optionByteLength::IF_TXSPEED_LENGTH)
-								{
-									return false;
-								}
-								updateBlockLength((int)4 + optionByteLength::IF_TXSPEED_LENGTH);
+								originalOptionLength = optionByteLength::IF_TXSPEED_LENGTH;
 								break;
 							case optionTypes::IF_RXSPEED:
-								if (valueLength != optionByteLength::IF_RXSPEED_LENGTH)
+								originalOptionLength = optionByteLength::IF_RXSPEED_LENGTH;
+								break;
+							default:
+								//Don't do anything.
+						}
+					}
+
+					//Delete the data originally in the map
+					delete[] this->options[option];
+				}
+
+				/* Checking validity of new size, dynamic length doesn't need to be validated. */
+				if (isStaticLengthOption(option))
+				{
+					if (isStaticLengthOptionAllowsMultiple(option))
+					{
+						switch (option)
+						{
+							case optionTypes::IF_IPV4ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV4ADDR_LENGTH == 0)
+								{
+									if (valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH > 0)
+									{
+										this->multCounts[option] = valueLength / (int)optionByteLength::IF_IPV4ADDR_LENGTH;
+									}
+								}
+								else
 								{
 									return false;
 								}
-								updateBlockLength((int)4 + optionByteLength::IF_RXSPEED_LENGTH);
+								break;
+							case optionTypes::IF_IPV6ADDR:
+								if (valueLength % (int)optionByteLength::IF_IPV6ADDR_LENGTH == 0)
+								{
+									if (valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH > 0)
+									{
+										this->multCounts[option] = valueLength / (int)optionByteLength::IF_IPV6ADDR_LENGTH;
+									}
+								}
+								else
+								{
+									return false;
+								}
 								break;
 							default:
 								return false;
 								break;
-							}
 						}
 					}
+					switch (option)
+					{
+						case optionTypes::IF_MACADDR:
+							if (valueLength != optionByteLength::IF_MACADDR_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_EUIADDR:
+							if (valueLength != optionByteLength::IF_EUIADDR_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_SPEED:
+							if (valueLength != optionByteLength::IF_SPEED_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_TSRESOL:
+							if (valueLength != optionByteLength::IF_TSRESOL_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_TZONE:
+							if (valueLength != optionByteLength::IF_TZONE_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_FCSLEN:
+							if (valueLength != optionByteLength::IF_FCSLEN_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_TSOFFSET:
+							if (valueLength != optionByteLength::IF_TSOFFSET_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_TXSPEED:
+							if (valueLength != optionByteLength::IF_TXSPEED_LENGTH)
+							{
+								return false;
+							}
+							break;
+						case optionTypes::IF_RXSPEED:
+							if (valueLength != optionByteLength::IF_RXSPEED_LENGTH)
+							{
+								return false;
+							}
+							break;
+						default:
+							//Don't do anything.
+					}
+
 				}
-				/* End of Handling Length */
-				/* 4 Nov, here. Wayne. Handling data copying.*/
-				
-				/* Check if this option exist*/
-				if (isOptionExist(option))
+
+				//If there is original data
+				if (originalOptionLength > 0)
 				{
-					delete[] this->options[option];
+					updateBlockLength(-((int)4 + originalOptionLength)); // Decrease the size based on origianl data.
 				}
-				char* newOption = new char[valueLength];
-				std::copy(value, value + valueLength, newOption);
-				this->options[option] = newOption;
+				// Appending new size.
+				updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY((int)4 + (int)valueLength, (int)structByteLength::BLOCK_READ_UNIT)); //Add tghe size of the new data.
+				/* End of handling size */
+
+				/* Copy data*/
+				this->options[option] = new char[valueLength];
+				std::copy(value, value + valueLength, this->options[option]);
 				return true;
 			}
 			else
 			{
 				return false;
 			}
-
-
 		}
 
 		bool interfaceDescriptionBlock::isOptionCurrentlyMultiple(optionTypes option)
@@ -965,15 +675,15 @@ namespace wayne {
 		{
 			switch (option)
 			{
-			case optionTypes::IF_NAME:
-			case optionTypes::IF_DESCRIPTION:
-			case optionTypes::IF_FILTER:
-			case optionTypes::IF_OS:
-			case optionTypes::IF_HARDWARE:
-				return true;
-			default:
-				return false;
-				break;
+				case optionTypes::IF_NAME:
+				case optionTypes::IF_DESCRIPTION:
+				case optionTypes::IF_FILTER:
+				case optionTypes::IF_OS:
+				case optionTypes::IF_HARDWARE:
+					return true;
+				default:
+					return false;
+					break;
 			}
 		}
 
@@ -981,35 +691,42 @@ namespace wayne {
 		{
 			switch (option)
 			{
-			case optionTypes::IF_IPV4ADDR:
-			case optionTypes::IF_IPV6ADDR:
-			case optionTypes::IF_MACADDR:
-			case optionTypes::IF_EUIADDR:
-			case optionTypes::IF_SPEED:
-			case optionTypes::IF_TSRESOL:
-			case optionTypes::IF_TZONE:
-			case optionTypes::IF_FCSLEN:
-			case optionTypes::IF_TSOFFSET:
-			case optionTypes::IF_TXSPEED:
-			case optionTypes::IF_RXSPEED:
-				return true;
-				break;
-			default:
-				return false;
-				break;
+				case optionTypes::IF_IPV4ADDR:
+				case optionTypes::IF_IPV6ADDR:
+				case optionTypes::IF_MACADDR:
+				case optionTypes::IF_EUIADDR:
+				case optionTypes::IF_SPEED:
+				case optionTypes::IF_TSRESOL:
+				case optionTypes::IF_TZONE:
+				case optionTypes::IF_FCSLEN:
+				case optionTypes::IF_TSOFFSET:
+				case optionTypes::IF_TXSPEED:
+				case optionTypes::IF_RXSPEED:
+					return true;
+					break;
+				default:
+					return false;
+					break;
 			}
 		}
 
 		bool interfaceDescriptionBlock::isStaticLengthOptionAllowsMultiple(optionTypes option)
 		{
-			switch (option)
+			if (this->options.empty())
 			{
-			case optionTypes::IF_IPV4ADDR:
-			case optionTypes::IF_IPV6ADDR:
-				return true;
-				break;
-			default:
 				return false;
+			}
+			else
+			{
+				switch (option)
+				{
+					case optionTypes::IF_IPV4ADDR:
+					case optionTypes::IF_IPV6ADDR:
+						return true;
+						break;
+					default:
+						return false;
+				}
 			}
 		}
 

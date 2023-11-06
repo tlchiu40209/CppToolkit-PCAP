@@ -19,9 +19,9 @@ namespace wayne {
 			} else {
 				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
 			}
-			setMajorVersion((unsigned short)1);
-			setMinorVersion((unsigned short)0);
-			setSectionLength((unsigned long)-1);
+			setMajorVersion((unsigned short)structByteDefault::SHB_MAJOR_VERSION_VALUE);
+			setMinorVersion((unsigned short)structByteDefault::SHB_MINOR_VERSION_VALUE);
+			setSectionLength((unsigned long)structByteDefault::SHB_SECTION_LENGTH_VALUE);
 
 			updateBlockLength(structByteLength::SHB_BYTE_ORDER_LENGTH);
 			updateBlockLength(structByteLength::SHB_MAJOR_VERSION_LENGTH + structByteLength::SHB_MINOR_VERSION_LENGTH);
@@ -40,9 +40,9 @@ namespace wayne {
 				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
 				break;
 			}
-			setMajorVersion((unsigned short)1);
-			setMinorVersion((unsigned short)0);
-			setSectionLength((unsigned long)-1);
+			setMajorVersion((unsigned short)structByteDefault::SHB_MAJOR_VERSION_VALUE);
+			setMinorVersion((unsigned short)structByteDefault::SHB_MINOR_VERSION_VALUE);
+			setSectionLength((unsigned long)structByteDefault::SHB_SECTION_LENGTH_VALUE);
 
 			updateBlockLength(structByteLength::SHB_BYTE_ORDER_LENGTH);
 			updateBlockLength(structByteLength::SHB_MAJOR_VERSION_LENGTH + structByteLength::SHB_MINOR_VERSION_LENGTH);
@@ -63,7 +63,7 @@ namespace wayne {
 			}
 			setMajorVersion((unsigned short)initMajorVersion);
 			setMinorVersion((unsigned short)initMinorVersion);
-			setSectionLength((unsigned long)-1);
+			setSectionLength((unsigned long)structByteDefault::SHB_SECTION_LENGTH_VALUE);
 
 			updateBlockLength(structByteLength::SHB_BYTE_ORDER_LENGTH);
 			updateBlockLength(structByteLength::SHB_MAJOR_VERSION_LENGTH + structByteLength::SHB_MINOR_VERSION_LENGTH);
@@ -73,7 +73,6 @@ namespace wayne {
 
 		sectionHeaderBlock::~sectionHeaderBlock()
 		{
-			/* Note: ~block() will be triggered automatically */
 			delete[] this->byteOrder;
 			delete[] this->majorVersion;
 			delete[] this->minorVersion;
@@ -82,86 +81,61 @@ namespace wayne {
 			{
 				delete[] option;
 			}
-			options.clear(); // @suppress("Method cannot be resolved")
+			options.clear();
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(const sectionHeaderBlock &other)
 		{
-			//block(other);
 			delete[] this->byteOrder;
 			this->byteOrder = new char[structByteLength::SHB_BYTE_ORDER_LENGTH];
 			std::copy(other.byteOrder, other.byteOrder + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
 			setMajorVersionExact(other.majorVersion);
 			setMinorVersionExact(other.minorVersion);
 			setSectionLengthExact(other.sectionLength);
-			for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
+			for (auto const& [key, option] : other.options)
 			{
-				if (isDynamicLengthOption(key)) // @suppress("Invalid arguments")
+				if (isDynamicLengthOption(key))
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					setOption(key, option, std::strlen(option));
 				}
-
-
 			}
 		}
 
 		sectionHeaderBlock::sectionHeaderBlock(sectionHeaderBlock &&other)
 		{
 			//block(other);
-			delete[] this->byteOrder;
-			this->byteOrder = new char[structByteLength::SHB_BYTE_ORDER_LENGTH];
-			std::copy(other.byteOrder, other.byteOrder + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
-			delete[] other.byteOrder;
-
-			delete[] this->majorVersion;
-			this->majorVersion = new char[structByteLength::SHB_MAJOR_VERSION_LENGTH];
-			std::copy(other.majorVersion, other.majorVersion + structByteLength::SHB_MAJOR_VERSION_LENGTH, this->majorVersion);
-			delete[] other.majorVersion;
-
-			delete[] this->minorVersion;
-			this->minorVersion = new char[structByteLength::SHB_MINOR_VERSION_LENGTH];
-			std::copy(other.minorVersion, other.minorVersion + structByteLength::SHB_MINOR_VERSION_LENGTH, this->minorVersion);
-			delete[] other.minorVersion;
-
-			delete[] this->sectionLength;
-			this->sectionLength = new char[structByteLength::SHB_SECTION_LENGTH_LENGTH];
-			std::copy(other.sectionLength, other.sectionLength + structByteLength::SHB_SECTION_LENGTH_LENGTH, this->sectionLength);
-			delete[] other.sectionLength;
-
-			for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
+			this->byteOrder = other.byteOrder;
+			this->majorVersion = other.majorVersion;
+			this->minorVersion = other.minorVersion;
+			this->sectionLength = other.sectionLength;
+			for (auto const& [key, option] : other.options)
 			{
-				char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-				std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-				this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
-				delete[] option;
+				this->options[key] = option;
+				other.options[key]=nullptr;
 			}
-			other.options.clear(); // @suppress("Method cannot be resolved")
+			other.byteOrder = nullptr;
+			other.majorVersion = nullptr;
+			other.minorVersion = nullptr;
+			other.sectionLength = nullptr;
+			other.options.clear();
 		}
 
 		sectionHeaderBlock& sectionHeaderBlock::operator=(const sectionHeaderBlock &other)
 		{
 			if (this != &other)
 			{
-				//block(other);
 				delete[] this->byteOrder;
 				this->byteOrder = new char[structByteLength::SHB_BYTE_ORDER_LENGTH];
 				std::copy(other.byteOrder, other.byteOrder + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
-				delete[] this->majorVersion;
-				this->majorVersion = new char[structByteLength::SHB_MAJOR_VERSION_LENGTH];
-				std::copy(other.majorVersion, other.majorVersion + structByteLength::SHB_MAJOR_VERSION_LENGTH, this->majorVersion);
-				delete[] this->minorVersion;
-				this->minorVersion = new char[structByteLength::SHB_MINOR_VERSION_LENGTH];
-				std::copy(other.minorVersion, other.minorVersion + structByteLength::SHB_MINOR_VERSION_LENGTH, this->minorVersion);
-				delete[] this->sectionLength;
-				this->sectionLength = new char[structByteLength::SHB_SECTION_LENGTH_LENGTH];
-				std::copy(other.sectionLength, other.sectionLength + structByteLength::SHB_SECTION_LENGTH_LENGTH, this->sectionLength);
-				for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				setMajorVersionExact(other.majorVersion);
+				setMinorVersionExact(other.minorVersion);
+				setSectionLengthExact(other.sectionLength);
+				for (auto const& [key, option] : other.options)
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
+					if (isDynamicLengthOption(key))
+					{
+						setOption(key, option, std::strlen(option));
+					}
 				}
 			}
 			return *this;
@@ -171,41 +145,26 @@ namespace wayne {
 		{
 			if (this != &other)
 			{
-				delete[] this->byteOrder;
-				this->byteOrder = new char[structByteLength::SHB_BYTE_ORDER_LENGTH];
-				std::copy(other.byteOrder, other.byteOrder + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
-				delete[] other.byteOrder;
-
-				delete[] this->majorVersion;
-				this->majorVersion = new char[structByteLength::SHB_MAJOR_VERSION_LENGTH];
-				std::copy(other.majorVersion, other.majorVersion + structByteLength::SHB_MAJOR_VERSION_LENGTH, this->majorVersion);
-				delete[] other.majorVersion;
-
-				delete[] this->minorVersion;
-				this->minorVersion = new char[structByteLength::SHB_MINOR_VERSION_LENGTH];
-				std::copy(other.minorVersion, other.minorVersion + structByteLength::SHB_MINOR_VERSION_LENGTH, this->minorVersion);
-				delete[] other.minorVersion;
-
-				delete[] this->sectionLength;
-				this->sectionLength = new char[structByteLength::SHB_SECTION_LENGTH_LENGTH];
-				std::copy(other.sectionLength, other.sectionLength + structByteLength::SHB_SECTION_LENGTH_LENGTH, this->sectionLength);
-				delete[] other.sectionLength;
-
-				for (auto const& [key, option] : other.options) // @suppress ("Method cannot be resolved") // @suppress("Symbol is not resolved")
+				this->byteOrder = other.byteOrder;
+				this->majorVersion = other.majorVersion;
+				this->minorVersion = other.minorVersion;
+				this->sectionLength = other.sectionLength;
+				for (auto const& [key, option] : other.options)
 				{
-					char* newOption = new char[std::strlen(option)]; // @suppress("Invalid arguments")
-					std::copy(option, option + std::strlen(option), newOption); // @suppress("Invalid arguments")
-					this->options.insert(std::pair<optionTypes, char*>(key, newOption)); // @suppress("Symbol is not resolved") // @suppress("Method cannot be resolved")
-					delete[] option;
+					this->options[key] = option;
+					other.options[key]=nullptr;
 				}
-				other.options.clear(); // @suppress("Method cannot be resolved")
+				other.byteOrder = nullptr;
+				other.majorVersion = nullptr;
+				other.minorVersion = nullptr;
+				other.sectionLength = nullptr;
+				other.options.clear();
 			}
 			return *this;
 		}
 
-		bool sectionHeaderBlock::operator ==(const sectionHeaderBlock &other) /*Nov 2, this need to be redone.*/
+		bool sectionHeaderBlock::operator ==(const sectionHeaderBlock &other)
 		{
-			bool isEqual = true;
 			if (wayne::numberUtil::bytesStaticToNumber(this->byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != wayne::numberUtil::bytesStaticToNumber(other.byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)) {
 				return false;
 			}
@@ -222,16 +181,16 @@ namespace wayne {
 				return false;
 			}
 
-			if (isEqual &&  this->options.size() != other.options.size()) // @suppress("Method cannot be resolved")
+			if (this->options.size() != other.options.size())
 			{
-				isEqual = false;
+				return false;
 			}
 
-			if (isEqual && this->options != other.options)
+			if (this->options != other.options)
 			{
-				isEqual = false;
+				return false;
 			}
-			return isEqual;
+			return true;
 		}
 
 		endianTypes sectionHeaderBlock::getByteOrder()
@@ -361,7 +320,7 @@ namespace wayne {
 
 		int sectionHeaderBlock::getAllOptionsCount()
 		{
-			return options.size(); // @suppress("Method cannot be resolved")
+			return this->options.size(); // @suppress("Method cannot be resolved")
 		}
 
 		bool sectionHeaderBlock::isOptionExist(optionTypes option)
@@ -389,7 +348,7 @@ namespace wayne {
 			}
 			else
 			{
-				return toReturn;
+				return nullptr;
 			}
 		}
 
@@ -406,8 +365,8 @@ namespace wayne {
 					else
 					{
 						// Don't do anything. Because there is no static option.
+						return false;
 					}
-					delete[] this->options[option];
 				}
 				else
 				{
@@ -418,11 +377,12 @@ namespace wayne {
 					else
 					{
 						// Don't do anything. Because there is no static option.
+						return false;
 					}
 				}
+				delete[] this->options[option];
 				this->options[option] = new char[valueLength];
-				char* newOption = new char[valueLength];
-				std::copy(newOption, newOption + valueLength, this->options[option]); // @suppress("Invalid arguments")
+				std::copy(value, value + valueLength, this->options[option]);
 				return true;
 			}
 			else
