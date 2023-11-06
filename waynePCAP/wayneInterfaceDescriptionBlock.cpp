@@ -21,7 +21,7 @@ namespace wayne {
 		{
 			setBlockType(blockTypes::INTERFACE_DESCRIPTION);
 			setLinkType(linkTypes::LINKTYPE_ETHERNET);
-			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE);
+			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			setSnapLength((unsigned int)structByteDefault::IDB_SNAP_LENGTH_VALUE);
 
 			updateBlockLength(structByteLength::IDB_LINK_TYPE_LENGTH + structByteLength::IDB_RESERVED_LENGTH);
@@ -32,7 +32,7 @@ namespace wayne {
 		{
 			setBlockType(blockTypes::INTERFACE_DESCRIPTION);
 			setLinkType(initType);
-			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE);
+			this->reserved = wayne::numberUtil::numberToBytesStatic((short)structByteDefault::IDB_RESERVED_VALUE, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			setSnapLength(initSnapLength);
 			updateBlockLength(structByteLength::IDB_LINK_TYPE_LENGTH + structByteLength::IDB_RESERVED_LENGTH);
 			updateBlockLength(structByteLength::IDB_SNAP_LENGTH_LENGTH);
@@ -54,7 +54,7 @@ namespace wayne {
 		{
 			setLinkTypeExact(other.linkType);
 			delete this->reserved;
-			this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)];
+			this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)];
 			std::copy(other.reserved, other.reserved + structByteLength::IDB_RESERVED_LENGTH, this->reserved);
 			setSnapLengthExact(other.snapLength);
 
@@ -161,7 +161,7 @@ namespace wayne {
 			{
 				setLinkTypeExact(other.linkType);
 				delete this->reserved;
-				this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)];
+				this->reserved = new char[(int)wayne::numberUtil::bytesStaticToNumber(other.reserved, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)];
 				std::copy(other.reserved, other.reserved + structByteLength::IDB_RESERVED_LENGTH, this->reserved);
 				setSnapLengthExact(other.snapLength);
 
@@ -269,11 +269,11 @@ namespace wayne {
 
 		bool interfaceDescriptionBlock::operator==(const interfaceDescriptionBlock &other)
 		{
-			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)))
+			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
@@ -289,7 +289,7 @@ namespace wayne {
 
 		linkTypes interfaceDescriptionBlock::getLinkType()
 		{
-			return (linkTypes)wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_SHORT);
+			return (linkTypes)wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* interfaceDescriptionBlock::getLinkTypeExact()
@@ -302,7 +302,7 @@ namespace wayne {
 		void interfaceDescriptionBlock::setLinkType(linkTypes type)
 		{
 			delete[] this->linkType;
-			this->linkType = wayne::numberUtil::numberToBytesStatic((unsigned short)linkTypes::LINKTYPE_ETHERNET);
+			this->linkType = wayne::numberUtil::numberToBytesStatic((unsigned short)linkTypes::LINKTYPE_ETHERNET, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void interfaceDescriptionBlock::setLinkTypeExact(const char* linkTypeExact)
@@ -314,7 +314,7 @@ namespace wayne {
 
 		unsigned int interfaceDescriptionBlock::getSnapLength()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->snapLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);
+			return wayne::numberUtil::bytesStaticToNumber(this->snapLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* interfaceDescriptionBlock::getSnapLengthExact()
@@ -327,7 +327,7 @@ namespace wayne {
 		void interfaceDescriptionBlock::setSnapLength(unsigned int newSnapLength)
 		{
 			delete[] this->snapLength;
-			this->snapLength = wayne::numberUtil::numberToBytesStatic(newSnapLength);
+			this->snapLength = wayne::numberUtil::numberToBytesStatic(newSnapLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void interfaceDescriptionBlock::setSnapLengthExact(const char* newSnapLengthExact)

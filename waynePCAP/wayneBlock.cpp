@@ -64,11 +64,11 @@ namespace wayne {
 
 		bool block::operator==(const block &other)
 		{
-			if (wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER) != wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER))
+			if (wayne::numberUtil::bytesStaticToNumber(this->blockType, (unsigned int) 0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(this->blockType, (unsigned int) 0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER) != wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER))
+			if (wayne::numberUtil::bytesStaticToNumber(this->blockLength, (unsigned int) 0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(this->blockLength, (unsigned int) 0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT))
 			{
 				return false;
 			}
@@ -78,7 +78,7 @@ namespace wayne {
 		void block::setBlockType(blockTypes type)
 		{
 			delete[] this->blockType;
-			this->blockType = wayne::numberUtil::numberToBytesStatic((int)type);
+			this->blockType = wayne::numberUtil::numberToBytesStatic((int)type, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void block::setBlockTypeExact(char* newBlockType)
@@ -90,7 +90,7 @@ namespace wayne {
 
 		blockTypes block::getBlockType()
 		{
-			return (blockTypes)(wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER));
+			return (blockTypes)(wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT));
 		}
 
 		char* block::getBlockTypeExact()
@@ -102,7 +102,7 @@ namespace wayne {
 
 		int block::getBlockLength()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER);
+			return wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* block::getBlockLengthExact()
@@ -119,28 +119,28 @@ namespace wayne {
 				wayne::IO::logLn("PCAPNG only allows size update with the size of 4.", true);
 				return false;
 			}
-			unsigned int blockLengthRecovered = wayne::numberUtil::bytesStaticToNumber(this->blockLength, blockLengthRecovered);
+			unsigned int blockLengthRecovered = wayne::numberUtil::bytesStaticToNumber(this->blockLength, blockLengthRecovered, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			delete this->blockLength;
 			if (blockLengthRecovered + deltaLength < 0) {
-				this->blockLength = wayne::numberUtil::numberToBytesStatic((unsigned int)0);
+				this->blockLength = wayne::numberUtil::numberToBytesStatic((unsigned int)0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 				return false;
 			} else {
 				blockLengthRecovered += deltaLength;
-				this->blockLength = wayne::numberUtil::numberToBytesStatic(blockLengthRecovered);
+				this->blockLength = wayne::numberUtil::numberToBytesStatic(blockLengthRecovered, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 				return true;
 			}
 		}
 
 		bool block::updateBlockLengthExact(const char* deltaLengthExact)
 		{
-			int deltaLengthRecovered = wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered);
+			int deltaLengthRecovered = wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			return updateBlockLength(deltaLengthRecovered);
 		}
 
 		void block::setBlockLength(unsigned int exactLength)
 		{
 			delete[] this->blockLength;
-			this->blockLength = wayne::numberUtil::numberToBytesStatic(exactLength);
+			this->blockLength = wayne::numberUtil::numberToBytesStatic(exactLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 
 		}
 
