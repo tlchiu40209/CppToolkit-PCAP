@@ -277,18 +277,47 @@ namespace wayne {
 		char* EnhancedPacketBlock::getOption(optionTypes option)
 		{
 			char* toReturn;
-			if (isDynamicLengthOption(option))
+			if (isOptionExist(option))
 			{
-				toReturn = new char[std::strlen(this->options[option])];
-				std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
-				return toReturn;
+				if (isDynamicLengthOption(option))
+				{
+					toReturn = new char[std::strlen(this->options[option])];
+					std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
+					return toReturn;
+				}
+				else
+				{
+					switch(option)
+					{
+						case optionTypes::EPB_DROPCOUNT:
+							toReturn = new char[optionByteLength::EPB_DROPCOUNT_LENGTH];
+							std::copy(this->options[option], this->options[option] + optionByteLength::EPB_DROPCOUNT_LENGTH, toReturn);
+							return toReturn;
+							break;
+						case optionTypes::EPB_FLAGS:
+							toReturn = new char[optionByteLength::EPB_FLAGS_LENGTH];
+							std::copy(this->options[option], this->options[option] + optionByteLength::EPB_FLAGS_LENGTH, toReturn);
+							return toReturn;
+							break;
+						case optionTypes::EPB_PACKETID:
+							toReturn = new char[optionByteLength::EPB_PACKETID_LENGTH];
+							std::copy(this->options[option], this->options[option] + optionByteLength::EPB_PACKETID_LENGTH, toReturn);
+							return toReturn;
+							break;
+						case optionTypes::EPB_QUEUE:
+							toReturn = new char[optionByteLength::EPB_QUEUE_LENGTH];
+							std::copy(this->options[option], this->options[option] + optionByteLength::EPB_QUEUE_LENGTH, toReturn);
+							return toReturn;
+							break;
+						default:
+							return toReturn;
+							break;
+					}
+				}
 			}
 			else
 			{
-				switch(option)
-				{
-
-				}
+				return toReturn;
 			}
 		}
 

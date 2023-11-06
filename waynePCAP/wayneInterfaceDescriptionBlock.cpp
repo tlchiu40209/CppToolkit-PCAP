@@ -612,97 +612,104 @@ namespace wayne {
 		char* interfaceDescriptionBlock::getOption(optionTypes option)
 		{
 			char* toReturn;
-			if (isDynamicLengthOption(option))
+			if (isOptionExist(option))
 			{
-				toReturn = new char[std::strlen(this->options[option])];
-				std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
-				return toReturn;
-			}
-			else
-			{
-				if (isOptionCurrentlyMultiple(option))
+				if (isDynamicLengthOption(option))
 				{
-					switch (option)
-					{
-						case optionTypes::IF_IPV4ADDR:
-						toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]];
-						std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]), toReturn);
-						return toReturn;
-						break;
-						case optionTypes::IF_IPV6ADDR:
-						toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]];
-						std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]), toReturn);
-						return toReturn;
-						break;
-						default:
-						return toReturn;
-						break;
-					}
+					toReturn = new char[std::strlen(this->options[option])];
+					std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
+					return toReturn;
 				}
 				else
 				{
-					switch (option)
+					if (isOptionCurrentlyMultiple(option))
 					{
-						case optionTypes::IF_IPV4ADDR:
-							toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV4ADDR_LENGTH, toReturn);
+						switch (option)
+						{
+							case optionTypes::IF_IPV4ADDR:
+							toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]];
+							std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV4ADDR_LENGTH * this->multCounts[option]), toReturn);
 							return toReturn;
 							break;
-						case optionTypes::IF_IPV6ADDR:
-							toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV6ADDR_LENGTH, toReturn);
+							case optionTypes::IF_IPV6ADDR:
+							toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]];
+							std::copy(this->options[option], this->options[option] + (optionByteLength::IF_IPV6ADDR_LENGTH * this->multCounts[option]), toReturn);
 							return toReturn;
 							break;
-						case optionTypes::IF_MACADDR:
-							toReturn = new char[optionByteLength::IF_MACADDR_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_MACADDR_LENGTH, toReturn);
+							default:
 							return toReturn;
 							break;
-						case optionTypes::IF_EUIADDR:
-							toReturn = new char[optionByteLength::IF_EUIADDR_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_EUIADDR_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_SPEED:
-							toReturn = new char[optionByteLength::IF_SPEED_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_SPEED_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_TSRESOL:
-							toReturn = new char[optionByteLength::IF_TSRESOL_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSRESOL_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_TZONE:
-							toReturn = new char[optionByteLength::IF_TZONE_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_TZONE_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_FCSLEN:
-							toReturn = new char[optionByteLength::IF_FCSLEN_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_FCSLEN_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_TSOFFSET:
-							toReturn = new char[optionByteLength::IF_TSOFFSET_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSOFFSET_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_TXSPEED:
-							toReturn = new char[optionByteLength::IF_TXSPEED_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_TXSPEED_LENGTH, toReturn);
-							return toReturn;
-							break;
-						case optionTypes::IF_RXSPEED:
-							toReturn = new char[optionByteLength::IF_RXSPEED_LENGTH];
-							std::copy(this->options[option], this->options[option] + optionByteLength::IF_RXSPEED_LENGTH, toReturn);
-							return toReturn;
-							break;
-						default:
-							return toReturn;
-							break;
+						}
+					}
+					else
+					{
+						switch (option)
+						{
+							case optionTypes::IF_IPV4ADDR:
+								toReturn = new char[optionByteLength::IF_IPV4ADDR_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV4ADDR_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_IPV6ADDR:
+								toReturn = new char[optionByteLength::IF_IPV6ADDR_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_IPV6ADDR_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_MACADDR:
+								toReturn = new char[optionByteLength::IF_MACADDR_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_MACADDR_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_EUIADDR:
+								toReturn = new char[optionByteLength::IF_EUIADDR_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_EUIADDR_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_SPEED:
+								toReturn = new char[optionByteLength::IF_SPEED_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_SPEED_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_TSRESOL:
+								toReturn = new char[optionByteLength::IF_TSRESOL_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSRESOL_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_TZONE:
+								toReturn = new char[optionByteLength::IF_TZONE_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TZONE_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_FCSLEN:
+								toReturn = new char[optionByteLength::IF_FCSLEN_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_FCSLEN_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_TSOFFSET:
+								toReturn = new char[optionByteLength::IF_TSOFFSET_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TSOFFSET_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_TXSPEED:
+								toReturn = new char[optionByteLength::IF_TXSPEED_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_TXSPEED_LENGTH, toReturn);
+								return toReturn;
+								break;
+							case optionTypes::IF_RXSPEED:
+								toReturn = new char[optionByteLength::IF_RXSPEED_LENGTH];
+								std::copy(this->options[option], this->options[option] + optionByteLength::IF_RXSPEED_LENGTH, toReturn);
+								return toReturn;
+								break;
+							default:
+								return toReturn;
+								break;
+						}
 					}
 				}
+			}
+			else
+			{
+				return toReturn;
 			}
 		}
 

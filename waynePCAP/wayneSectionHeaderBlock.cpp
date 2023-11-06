@@ -380,54 +380,16 @@ namespace wayne {
 
 		char* sectionHeaderBlock::getOption(optionTypes option)
 		{
+			char* toReturn;
 			if (isOptionExist(option))
 			{
-				return this->options[option];
+				toReturn = new char[std::strlen(this->options[option])];
+				std::copy(this->options[option], this->options[option] + std::strlen(this->options[option]), toReturn);
+				return toReturn;
 			}
 			else
 			{
-				return nullptr;
-			}
-		}
-
-		std::string sectionHeaderBlock::getOptionString(optionTypes option)
-		{
-			if (isOptionExist(option))
-			{
-				if (isDynamicLengthOption(option))
-				{
-					std::string toReturn(this->options[option]); // @suppress("Invalid arguments")
-					return toReturn;
-				}
-				else
-				{
-					//Do nothing... Because there is no static option.
-					return (std::string)"";
-				}
-			}
-			else
-			{
-				return (std::string)"";
-			}
-		}
-
-		unsigned short sectionHeaderBlock::getOptionLength(optionTypes option)
-		{
-			if (!isOptionExist(option))
-			{
-				return (unsigned short) 0;
-			}
-			else
-			{
-				if (!isDynamicLengthOption(option))
-				{
-					return (unsigned short) 0;
-					// Currently, there is no static length option.
-				}
-				else
-				{
-					return (unsigned short)std::strlen(this->options[option]); // @suppress("Invalid arguments")
-				}
+				return toReturn;
 			}
 		}
 
@@ -467,11 +429,6 @@ namespace wayne {
 			{
 				return false;
 			}
-		}
-
-		bool sectionHeaderBlock::setOptionString(optionTypes option, std::string value)
-		{
-			return setOption(option, value.c_str(), value.length());
 		}
 
 		bool sectionHeaderBlock::isOptionAcceptable(optionTypes option)

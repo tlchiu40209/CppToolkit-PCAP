@@ -57,10 +57,10 @@ namespace wayne {
 				bool isOptionExist(optionTypes option);
 
 				char* getOption(optionTypes option);
-				std::string getOptionString(optionTypes option);
-				unsigned short getOptionLength(optionTypes option);
+				//std::string getOptionString(optionTypes option);
+				//unsigned short getOptionLength(optionTypes option);
 				bool setOption(optionTypes option, const char* value, unsigned int valueLength);
-				bool setOptionString(optionTypes option, std::string value);
+				//bool setOptionString(optionTypes option, std::string value);
 
 				bool isOptionAcceptable(optionTypes option);
 				bool isDynamicLengthOption(optionTypes option);
