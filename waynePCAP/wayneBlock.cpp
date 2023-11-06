@@ -62,6 +62,19 @@ namespace wayne {
 			return *this;
 		}
 
+		bool block::operator==(const block &other)
+		{
+			if (wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER) != wayne::numberUtil::bytesStaticToNumber(this->blockType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER) != wayne::numberUtil::bytesStaticToNumber(this->blockLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER))
+			{
+				return false;
+			}
+			return true;
+		}
+
 		void block::setBlockType(blockTypes type)
 		{
 			delete[] this->blockType;

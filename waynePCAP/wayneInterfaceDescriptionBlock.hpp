@@ -29,6 +29,7 @@ namespace wayne {
 		interfaceDescriptionBlock(interfaceDescriptionBlock &&other);
 		interfaceDescriptionBlock& operator=(const interfaceDescriptionBlock &other);
 		interfaceDescriptionBlock& operator=(interfaceDescriptionBlock &&other);
+		bool operator==(const sectionHeaderBlock &other);
 
 		linkTypes getLinkType();
 		char* getLinkTypeExact();

@@ -32,6 +32,7 @@ namespace wayne {
 				block(block &&other);
 				block& operator=(const block &other);
 				block& operator=(block &&other);
+				bool operator==(const block &other);
 
 				blockTypes getBlockType();
 				char* getBlockTypeExact();

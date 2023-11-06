@@ -186,9 +186,12 @@ namespace wayne {
 				return false;
 			}
 
-			if (this->options != other.options)
+			for (auto const& [key, option] : other.options)
 			{
-				return false;
+				if (std::strcmp(this->options[key], option) != 0)
+				{
+					return false;
+				}
 			}
 			return true;
 		}

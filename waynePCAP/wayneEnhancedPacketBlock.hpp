@@ -30,6 +30,7 @@ namespace wayne {
 		EnhancedPacketBlock(EnhancedPacketBlock &&other);
 		EnhancedPacketBlock& operator=(const EnhancedPacketBlock &other);
 		EnhancedPacketBlock& operator=(EnhancedPacketBlock &&other);
+		bool operator==(const EnhancedPacketBlock &other);
 
 		unsigned int getInterfaceId();
 		char* getInterfaceIdExact();

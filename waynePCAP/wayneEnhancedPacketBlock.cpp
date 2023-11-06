@@ -176,6 +176,42 @@ namespace wayne {
 			return *this;
 		}
 
+		bool EnhancedPacketBlock::operator==(const EnhancedPacketBlock &other)
+		{
+			if (wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			if (std::strcmp(this->packetData, other.packetData) != 0)
+			{
+				return false;
+			}
+			for (auto const& [key, option] : other.options)
+			{
+				if (std::strcmp(option, this->options[key]) != 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		unsigned int EnhancedPacketBlock::getInterfaceId()
 		{
 			return wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER);

@@ -265,6 +265,26 @@ namespace wayne {
 			return *this;
 		}
 
+		bool interfaceDescriptionBlock::operator==(const interfaceDescriptionBlock &other)
+		{
+			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT)))
+			{
+				return false;
+			}
+			if (wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER) != (wayne::numberUtil::bytesStaticToNumber(other.linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER)))
+			{
+				return false;
+			}
+			for (auto const& [key, option] : other.options)
+			{
+				if (std::strcmp(this->options[key], option) != 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		linkTypes interfaceDescriptionBlock::getLinkType()
 		{
 			return (linkTypes)wayne::numberUtil::bytesStaticToNumber(this->linkType, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_SHORT);
