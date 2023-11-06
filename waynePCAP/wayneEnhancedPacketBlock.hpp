@@ -66,14 +66,11 @@ public:
 	unsigned int getAllOptionCount();
 	char* getOption(optionTypes option);
 	bool setOption(optionTypes option, const char* value, unsigned int valueLength);
-	bool isOptionCurrentlyMultiple(optionTypes option);
 	bool isOptionExist(optionTypes option);
 	
-	unsigned int getCurrentMultipleOptionsMult(optionTypes option);
 	bool isOptionAcceptable(optionTypes option);
 	bool isDynamicLengthOption(optionTypes option);
 	bool isStaticLengthOption(optionTypes option);
-	bool isStaticLengthOptionAllowsMultiple(optionTypes option);
 };
 
 } /* namespace PCAP */

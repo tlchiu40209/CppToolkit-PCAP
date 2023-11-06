@@ -287,44 +287,14 @@ namespace wayne {
 			{
 				switch(option)
 				{
-					case optionTypes::EPB_FLAGS:
-					toReturn = new char[optionByteLength::EPB_FLAGS_LENGTH];
-					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_FLAGS_LENGTH, toReturn);
-					return toReturn;
-					break;
-					case optionTypes::EPB_DROPCOUNT:
-					toReturn = new char[optionByteLength::EPB_DROPCOUNT_LENGTH];
-					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_DROPCOUNT_LENGTH, toReturn);
-					return toReturn;
-					break;
-					case optionTypes::EPB_PACKETID:
-					toReturn = new char[optionByteLength::EPB_PACKETID_LENGTH];
-					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_PACKETID_LENGTH, toReturn);
-					return toReturn;
-					break;
-					case optionTypes::EPB_QUEUE:
-					toReturn = new char[optionByteLength::EPB_QUEUE_LENGTH];
-					std::copy(this->options[option], this->options[option] + optionByteLength::EPB_QUEUE_LENGTH, toReturn);
-					return toReturn;
-					break;
-					default:
-					return toReturn;
-					break;
+
 				}
 			}
 		}
 
 		bool EnhancedPacketBlock::setOption(optionTypes option, const char* value, unsigned int valueLength)
 		{
-			if (isOptionAcceptable(option))
-			{
 
-
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 		bool EnhancedPacketBlock::isOptionExist(optionTypes option)
@@ -359,7 +329,7 @@ namespace wayne {
 
 		bool EnhancedPacketBlock::isDynamicLengthOption(optionTypes option)
 		{
-			switch (option)
+			switch(option)
 			{
 				case optionTypes::EPB_HASH:
 				case optionTypes::EPB_VERDICT:
@@ -373,7 +343,7 @@ namespace wayne {
 
 		bool EnhancedPacketBlock::isStaticLengthOption(optionTypes option)
 		{
-			switch (option)
+			switch(option)
 			{
 				case optionTypes::EPB_DROPCOUNT:
 				case optionTypes::EPB_FLAGS:
