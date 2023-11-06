@@ -11,15 +11,60 @@ namespace wayne
 {
 	namespace PCAP
 	{
-		/* class byteSeqs */
+		PCAPNG::PCAPNG()
+		{
 
+		}
 
-		/* class identBytes */
+		PCAPNG::PCAPNG(const PCAPNG &other)
+		{
 
+		}
 
-		/* struct block() */
+		PCAPNG::PCAPNG(PCAPNG &&other)
+		{
 
+		}
+		
+		PCAPNG::~PCAPNG()
+		{
+			
+		}
 
+		PCAPNG& PCAPNG::operator=(const PCAPNG &other)
+		{
+
+		}
+
+		PCAPNG& PCAPNG::operator=(PCAPNG &&other)
+		{
+
+		}
+
+		bool PCAPNG::operator==(const PCAPNG &other)
+		{
+
+		}
+
+		sectionHeaderBlock PCAPNG::getSectionHeader()
+		{
+			return this->sectionHeader;
+		}
+
+		void PCAPNG::setSectionHeader(sectionHeaderBlock newSectionHeader)
+		{
+			this->sectionHeader = newSectionHeader;
+		}
+
+		interfaceDescriptionBlock PCAPNG::getInterfaceDescriptionBlock()
+		{
+			return this->interfaceDescription;
+		}
+
+		void PCAPNG::setInterfaceDescriptionBlock(interfaceDescriptionBlock newInterfaceDescription)
+		{
+			this->interfaceDescription = newInterfaceDescription;
+		}
 
 	}
 } /* namespace wayne */

@@ -34,6 +34,11 @@ namespace wayne
 				PCAPNG& operator=(PCAPNG &&other);
 				bool operator==(const PCAPNG &other);
 
+				sectionHeaderBlock getSectionHeader();
+				void setSectionHeader(sectionHeaderBlock newSectionHeader);
+				interfaceDescriptionBlock getInterfaceDescriptionBlock();
+				void setInterfaceDescriptionBlock(interfaceDescriptionBlock newInterfaceDescription);
+
 		};
 
 	}

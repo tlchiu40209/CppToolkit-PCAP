@@ -34,7 +34,7 @@ namespace wayne {
 			updateBlockLength(structByteLength::EPB_TIMESTAMP_FULL_LENGTH);
 			updateBlockLength(structByteLength::EPB_CAPTURED_PACKET_LENGTH_LENGTH);
 			updateBlockLength(structByteLength::EPB_ORIGINAL_PACKET_LENGTH_LENGTH);
-			updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY(initCapturedPacketLength, (unsigned int)structByteLength::BLOCK_READ_UNIT));
+			updateBlockLength(numberUtil::nextNearestMultOfXFromY(initCapturedPacketLength, (unsigned int)structByteLength::BLOCK_READ_UNIT));
 		}
 
 		enhancedPacketBlock::~enhancedPacketBlock() 
@@ -57,7 +57,7 @@ namespace wayne {
 			setInterfaceIdExact(other.interfaceId);
 			setTimestampUpperExact(other.timestampUpper);
 			setTimestampLowerExact(other.timestampLower);
-			setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT));
+			setPacketData(other.packetData, numberUtil::bytesStaticToNumber(other.capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), numberUtil::bytesStaticToNumber(other.originalPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT));
 			for (auto const& [key, option] : other.options)
 			{
 				int optionLength;
@@ -117,7 +117,7 @@ namespace wayne {
 				setInterfaceIdExact(other.interfaceId);
 				setTimestampUpperExact(other.timestampUpper);
 				setTimestampLowerExact(other.timestampLower);
-				setPacketData(other.packetData, wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT));
+				setPacketData(other.packetData, numberUtil::bytesStaticToNumber(other.capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), numberUtil::bytesStaticToNumber(other.originalPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT));
 				for (auto const& [key, option] : other.options)
 				{
 					int optionLength;
@@ -178,23 +178,23 @@ namespace wayne {
 
 		bool enhancedPacketBlock::operator==(const enhancedPacketBlock &other)
 		{
-			if (wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
+			if (numberUtil::bytesStaticToNumber(this->interfaceId, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (numberUtil::bytesStaticToNumber(other.interfaceId, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
+			if (numberUtil::bytesStaticToNumber(this->timestampLower, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (numberUtil::bytesStaticToNumber(other.timestampLower, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
+			if (numberUtil::bytesStaticToNumber(this->timestampUpper, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (numberUtil::bytesStaticToNumber(other.timestampUpper, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
+			if (numberUtil::bytesStaticToNumber(this->capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (numberUtil::bytesStaticToNumber(other.capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
-			if (wayne::numberUtil::bytesStaticToNumber(this->originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (wayne::numberUtil::bytesStaticToNumber(other.originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
+			if (numberUtil::bytesStaticToNumber(this->originalPacketLength, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != (numberUtil::bytesStaticToNumber(other.originalPacketLength, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)))
 			{
 				return false;
 			}
@@ -214,7 +214,7 @@ namespace wayne {
 
 		unsigned int enhancedPacketBlock::getInterfaceId()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->interfaceId, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->interfaceId, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* enhancedPacketBlock::getInterfaceIdExact()
@@ -227,7 +227,7 @@ namespace wayne {
 		void enhancedPacketBlock::setInterfaceId(unsigned int newInterfaceId)
 		{
 			delete[] this->interfaceId;
-			this->interfaceId = wayne::numberUtil::numberToBytesStatic(newInterfaceId, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->interfaceId = numberUtil::numberToBytesStatic(newInterfaceId, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void enhancedPacketBlock::setInterfaceIdExact(char* newInterfaceIdExact)
@@ -240,7 +240,7 @@ namespace wayne {
 		unsigned long long enhancedPacketBlock::getTimestamp()
 		{
 			char* fullTimeStamp = getTimestampExact();
-			unsigned long long toReturn = wayne::numberUtil::bytesStaticToNumber(fullTimeStamp, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_LONG_LONG, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			unsigned long long toReturn = numberUtil::bytesStaticToNumber(fullTimeStamp, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_LONG_LONG, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			delete[] fullTimeStamp;
 			return toReturn;
 		}
@@ -255,7 +255,7 @@ namespace wayne {
 
 		unsigned int enhancedPacketBlock::getTimestampUpper()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->timestampUpper, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->timestampUpper, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* enhancedPacketBlock::getTimestampUpperExact()
@@ -267,7 +267,7 @@ namespace wayne {
 
 		unsigned int enhancedPacketBlock::getTimestampLower()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->timestampLower, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->timestampLower, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* enhancedPacketBlock::getTimestampLowerExact()
@@ -281,7 +281,7 @@ namespace wayne {
 		{
 			delete[] this->timestampLower;
 			delete[] this->timestampUpper;
-			char* newTimestampExact = wayne::numberUtil::numberToBytesStatic(newTimestamp, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			char* newTimestampExact = numberUtil::numberToBytesStatic(newTimestamp, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			this->timestampLower = new char[structByteLength::EPB_TIMESTAMP_LOWER_LENGTH];
 			this->timestampUpper = new char[structByteLength::EPB_TIMESTAMP_UPPER_LENGTH];
 			std::copy(newTimestampExact, newTimestampExact + structByteLength::EPB_TIMESTAMP_UPPER_LENGTH, this->timestampUpper);
@@ -302,7 +302,7 @@ namespace wayne {
 		void enhancedPacketBlock::setTimestampUpper(unsigned int newTimestampUpper)
 		{
 			delete[] this->timestampUpper;
-			this->timestampUpper = wayne::numberUtil::numberToBytesStatic(newTimestampUpper, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->timestampUpper = numberUtil::numberToBytesStatic(newTimestampUpper, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void enhancedPacketBlock::setTimestampUpperExact(const char* newTimestampUpperExact)
@@ -314,7 +314,7 @@ namespace wayne {
 		void enhancedPacketBlock::setTimestampLower(unsigned int newTimestampLower)
 		{
 			delete[] this->timestampLower;
-			this->timestampLower = wayne::numberUtil::numberToBytesStatic(newTimestampLower, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->timestampLower = numberUtil::numberToBytesStatic(newTimestampLower, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void enhancedPacketBlock::setTimestampLowerExact(char* newTimestampLowerExact)
@@ -325,7 +325,7 @@ namespace wayne {
 
 		unsigned int enhancedPacketBlock::getCapturedPacketLength()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* enhancedPacketBlock::getCapturedPacketLengthExact()
@@ -338,7 +338,7 @@ namespace wayne {
 		void enhancedPacketBlock::setCapturedPacketLength(unsigned int newCapturedPacketLength)
 		{
 			delete[] this->capturedPacketLength;
-			this->capturedPacketLength = wayne::numberUtil::numberToBytesStatic(newCapturedPacketLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->capturedPacketLength = numberUtil::numberToBytesStatic(newCapturedPacketLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void enhancedPacketBlock::setCapturedPacketLengthExact(char* newCapturedPacketLengthExact)
@@ -350,7 +350,7 @@ namespace wayne {
 
 		unsigned int enhancedPacketBlock::getOriginalPacketLength()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->originalPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->originalPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* enhancedPacketBlock::getOriginalPacketLengthExact()
@@ -363,7 +363,7 @@ namespace wayne {
 		void enhancedPacketBlock::setOriginalPacketLength(unsigned int newOriginalPacketLength)
 		{
 			delete[] this->originalPacketLength;
-			this->originalPacketLength = wayne::numberUtil::numberToBytesStatic(newOriginalPacketLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->originalPacketLength = numberUtil::numberToBytesStatic(newOriginalPacketLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void enhancedPacketBlock::setOriginalPacketLengthExact(char* newOriginalPacketLengthExact)
@@ -375,21 +375,21 @@ namespace wayne {
 
 		char* enhancedPacketBlock::getPacketData()
 		{
-			char* toReturn = new char[wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)];
-			std::copy(this->packetData, this->packetData + wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), toReturn);
+			char* toReturn = new char[numberUtil::bytesStaticToNumber(this->capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)];
+			std::copy(this->packetData, this->packetData + numberUtil::bytesStaticToNumber(this->capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT), toReturn);
 			return toReturn;
 		}
 
 		void enhancedPacketBlock::setPacketData(const char* newPacketData, unsigned int newCapturedPacketLength, unsigned int newOriginalPacketLength)
 		{
-			updateBlockLength(-(wayne::numberUtil::bytesStaticToNumber(this->capturedPacketLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)));
+			updateBlockLength(-(numberUtil::bytesStaticToNumber(this->capturedPacketLength, numberUtil::numberTypeReference::DATA_TYPE_UNSIGNED_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)));
 			delete[] this->packetData;
 			delete[] this->capturedPacketLength;
 			delete[] this->originalPacketLength;
 			std::copy(newPacketData, newPacketData + newCapturedPacketLength, this->packetData);
 			updateBlockLength(newCapturedPacketLength);
-			this->capturedPacketLength = wayne::numberUtil::numberToBytesStatic(newCapturedPacketLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
-			this->originalPacketLength = wayne::numberUtil::numberToBytesStatic(newOriginalPacketLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->capturedPacketLength = numberUtil::numberToBytesStatic(newCapturedPacketLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->originalPacketLength = numberUtil::numberToBytesStatic(newOriginalPacketLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		optionTypes* enhancedPacketBlock::getAllOptionKeys()
@@ -474,7 +474,7 @@ namespace wayne {
 				{
 					if (isDynamicLengthOption(option))
 					{
-						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+						updateBlockLength((int)4 + numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
 					}
 					else
 					{

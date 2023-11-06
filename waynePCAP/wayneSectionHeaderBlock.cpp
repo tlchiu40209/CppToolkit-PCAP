@@ -14,7 +14,7 @@ namespace wayne {
 		{
 			setBlockType(blockTypes::SECTION_HEADER);
 			this->byteOrder = new char[structByteLength::SHB_BYTE_ORDER_LENGTH];
-			if (wayne::numberUtil::isBigEndian()) {
+			if (numberUtil::isBigEndian()) {
 				std::copy(endianTypesBytes::ENDIAN_TYPE_BIG_BYTES, endianTypesBytes::ENDIAN_TYPE_BIG_BYTES + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
 			} else {
 				std::copy(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES, endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES + structByteLength::SHB_BYTE_ORDER_LENGTH, this->byteOrder);
@@ -165,19 +165,19 @@ namespace wayne {
 
 		bool sectionHeaderBlock::operator ==(const sectionHeaderBlock &other)
 		{
-			if (wayne::numberUtil::bytesStaticToNumber(this->byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(other.byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
+			if (numberUtil::bytesStaticToNumber(this->byteOrder, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != numberUtil::bytesStaticToNumber(other.byteOrder, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
 				return false;
 			}
 
-			if (wayne::numberUtil::bytesStaticToNumber(this->majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(other.majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
+			if (numberUtil::bytesStaticToNumber(this->majorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != numberUtil::bytesStaticToNumber(other.majorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
 				return false;
 			}
 
-			if (wayne::numberUtil::bytesStaticToNumber(this->minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(other.minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
+			if (numberUtil::bytesStaticToNumber(this->minorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != numberUtil::bytesStaticToNumber(other.minorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
 				return false;
 			}
 
-			if (wayne::numberUtil::bytesStaticToNumber(this->sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(other.sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
+			if (numberUtil::bytesStaticToNumber(this->sectionLength, numberUtil::numberTypeReference::DATA_TYPE_LONG, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != numberUtil::bytesStaticToNumber(other.sectionLength, numberUtil::numberTypeReference::DATA_TYPE_LONG, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
 				return false;
 			}
 
@@ -198,7 +198,7 @@ namespace wayne {
 
 		endianTypes sectionHeaderBlock::getByteOrder()
 		{
-			if (wayne::numberUtil::bytesStaticToNumber(this->byteOrder, wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES), wayne::numberUtil::numberTypeReference::DATA_TYPE_INTEGER, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
+			if (numberUtil::bytesStaticToNumber(this->byteOrder, numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT) != numberUtil::bytesStaticToNumber(const_cast<char*>(endianTypesBytes::ENDIAN_TYPE_SMALL_BYTES), numberUtil::numberTypeReference::DATA_TYPE_INTEGER, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT)) {
 				return endianTypes::ENDIAN_TYPE_BIG;
 			}
 			else
@@ -216,7 +216,7 @@ namespace wayne {
 
 		short sectionHeaderBlock::getMajorVersion()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->majorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->majorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* sectionHeaderBlock::getMajorVersionExact()
@@ -229,7 +229,7 @@ namespace wayne {
 		void sectionHeaderBlock::setMajorVersion(unsigned short newMajorVersion)
 		{
 			delete[] this->majorVersion;
-			this->majorVersion = wayne::numberUtil::numberToBytesStatic(newMajorVersion, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->majorVersion = numberUtil::numberToBytesStatic(newMajorVersion, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void sectionHeaderBlock::setMajorVersionExact(const char* newMajorVersion)
@@ -241,7 +241,7 @@ namespace wayne {
 
 		short sectionHeaderBlock::getMinorVersion()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->minorVersion, wayne::numberUtil::numberTypeReference::DATA_TYPE_SHORT, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->minorVersion, numberUtil::numberTypeReference::DATA_TYPE_SHORT, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* sectionHeaderBlock::getMinorVersionExact()
@@ -254,7 +254,7 @@ namespace wayne {
 		void sectionHeaderBlock::setMinorVersion(unsigned short newMinorVersion)
 		{
 			delete[] this->minorVersion;
-			this->minorVersion = wayne::numberUtil::numberToBytesStatic(newMinorVersion, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->minorVersion = numberUtil::numberToBytesStatic(newMinorVersion, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void sectionHeaderBlock::setMinorVersionExact(const char* newMinorVersion)
@@ -266,40 +266,40 @@ namespace wayne {
 
 		long sectionHeaderBlock::getSectionLength()
 		{
-			return wayne::numberUtil::bytesStaticToNumber(this->sectionLength, wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			return numberUtil::bytesStaticToNumber(this->sectionLength, numberUtil::numberTypeReference::DATA_TYPE_LONG, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		char* sectionHeaderBlock::getSectionLengthExact()
 		{
-			char *toReturn = new char[wayne::numberUtil::numberTypeReference::DATA_TYPE_LONG];
+			char *toReturn = new char[numberUtil::numberTypeReference::DATA_TYPE_LONG];
 			std::copy(this->sectionLength, this->sectionLength + structByteLength::SHB_SECTION_LENGTH_LENGTH, toReturn);
 			return toReturn;
 		}
 
 		bool sectionHeaderBlock::updateSectionLength(long deltaLength)
 		{
-			unsigned long currentSectionLength = wayne::numberUtil::bytesStaticToNumber(this->sectionLength, currentSectionLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			unsigned long currentSectionLength = numberUtil::bytesStaticToNumber(this->sectionLength, currentSectionLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			delete[] this->sectionLength;
 			if (currentSectionLength + deltaLength < 0) {
-				this->sectionLength = wayne::numberUtil::numberToBytesStatic((unsigned long)0, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+				this->sectionLength = numberUtil::numberToBytesStatic((unsigned long)0, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 				return false;
 			} else {
 				currentSectionLength += deltaLength;
-				this->sectionLength = wayne::numberUtil::numberToBytesStatic(currentSectionLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+				this->sectionLength = numberUtil::numberToBytesStatic(currentSectionLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 				return true;
 			}
 		}
 
 		bool sectionHeaderBlock::updateSectionLengthExact(const char* deltaLengthExact)
 		{
-			long deltaLengthRecovered = wayne::numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			long deltaLengthRecovered = numberUtil::bytesStaticToNumber(const_cast<char*>(deltaLengthExact), deltaLengthRecovered, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 			return updateSectionLength(deltaLengthRecovered);
 		}
 
 		void sectionHeaderBlock::setSectionLength(unsigned long exactLength)
 		{
 			delete[] this->sectionLength;
-			this->sectionLength = wayne::numberUtil::numberToBytesStatic(exactLength, wayne::numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
+			this->sectionLength = numberUtil::numberToBytesStatic(exactLength, numberUtil::numberByteOrder::ORDER_DATA_DEFAULT);
 		}
 
 		void sectionHeaderBlock::setSectionLengthExact(const char* exactLengthExact)
@@ -361,9 +361,9 @@ namespace wayne {
 				int originalOptionLength = 0;
 				if (isOptionExist(option)) {	//If Option was already given
 					if (isDynamicLengthOption(option)) {
-						originalOptionLength = wayne::numberUtil::nextNearestMultOfXFromY((int)std::strlen(this->options[option]), (int)structByteLength::BLOCK_READ_UNIT); // @suppress("Invalid arguments")
+						originalOptionLength = numberUtil::nextNearestMultOfXFromY((int)std::strlen(this->options[option]), (int)structByteLength::BLOCK_READ_UNIT); // @suppress("Invalid arguments")
 						updateBlockLength(-originalOptionLength);				// Decrease the length
-						updateBlockLength(wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+						updateBlockLength(numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
 					}
 					else
 					{
@@ -374,7 +374,7 @@ namespace wayne {
 				else
 				{
 					if (isDynamicLengthOption(option)){
-						updateBlockLength((int)4 + wayne::numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
+						updateBlockLength((int)4 + numberUtil::nextNearestMultOfXFromY((int)valueLength, (int)structByteLength::BLOCK_READ_UNIT));
 						// The first 4 bytes is 2 for option title and 2 for option length.
 					}
 					else
